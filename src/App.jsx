@@ -1,13 +1,27 @@
 import './App.css'
-import LandingPage from './components/Landingpage'
+import { Routes, Route } from "react-router-dom";
+import LandingPage from './components/Landingpage';
+import { ToastContainer } from "react-toastify";
+import Dashboard from './dashboard/Dashboard';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
-
   return (
     <>
-      <LandingPage />
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+      <ToastContainer position="top-right" autoClose={3000} />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
