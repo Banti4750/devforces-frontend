@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import {
     Code2, Zap, Shield, ArrowRight, Github, Twitter, Menu, X, Trophy, Users,
     Clock, Star, Eye, EyeOff, Mail, Lock, User, CheckCircle, Award, Target,
@@ -7,8 +10,11 @@ import {
     ChevronDown, ChevronUp, Award as AwardIcon, Code, DollarSign, BookOpen,
     Shield as ShieldIcon, Gift, Coins, BarChart3, Cpu, Database, Server
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../provider/AuthProvider';
 
 const LandingPage = () => {
+    const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isVisible, setIsVisible] = useState({});
     const [showAuthModal, setShowAuthModal] = useState(false);
@@ -22,6 +28,10 @@ const LandingPage = () => {
         password: '',
         confirmPassword: ''
     });
+
+    const { login } = useAuth();
+
+
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -57,11 +67,58 @@ const LandingPage = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleAuthSubmit = (e) => {
+    const handleAuthSubmit = async (e) => {
         e.preventDefault();
-        console.log('Auth submission:', { mode: authMode, data: formData });
-        setShowAuthModal(false);
+
+        try {
+            if (authMode === "register" && formData.password !== formData.confirmPassword) {
+                toast.error("Passwords do not match!");
+                return;
+            }
+
+            const endpoint =
+                authMode === "register" ? "/api/auth/register" : "/api/auth/login";
+
+            const res = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await res.json();
+            if (data.token) {
+                login(data.token); // this saves token + redirects
+            }
+
+            if (!res.ok) {
+                toast.error(data.message || "Something went wrong!");
+                return;
+            }
+
+            toast.success(
+                authMode === "login"
+                    ? "Login successful 🎉"
+                    : "Registration successful 🚀"
+            );
+
+            // Store token
+            if (data.token) {
+                localStorage.setItem("token", data.token);
+            }
+
+            // Close modal
+            setShowAuthModal(false);
+
+            // Navigate to dashboard
+            navigate("/dashboard");
+        } catch (error) {
+            console.error("Auth error:", error);
+            toast.error("Server error, try again later!");
+        }
     };
+
 
     const toggleFaq = (index) => {
         setActiveFaq(activeFaq === index ? null : index);
@@ -412,6 +469,7 @@ const LandingPage = () => {
                             <button
                                 type="submit"
                                 className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 py-3 rounded-lg font-semibold transition-all transform hover:scale-105"
+
                             >
                                 {authMode === 'login' ? 'Enter Arena' : 'Join Competition'}
                             </button>
