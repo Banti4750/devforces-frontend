@@ -4,6 +4,7 @@ import LandingPage from './components/Landingpage';
 import { ToastContainer } from "react-toastify";
 import Dashboard from './dashboard/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+import Header from './components/Header';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           path="/dashboard"
           element={
             <ProtectedRoute>
+              <Header />
               <Dashboard />
             </ProtectedRoute>
           }

@@ -1,8 +1,11 @@
 import React from 'react'
+import Problempage from '../pages/problem/Problempage'
 
 const Dashboard = () => {
     return (
-        <div>Dashboard</div>
+        <>
+            <Problempage />
+        </>
     )
 }
 
