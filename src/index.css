@@ -1,1 +1,31 @@
 @import "tailwindcss";
+
+@theme {
+    --color-leetcode-dark-primary: #FFA116;
+    /* LeetCode orange */
+    --color-leetcode-dark-accent: #FF7700;
+    /* darker orange */
+    --color-leetcode-dark-easy: #00AF9B;
+    /* easy problem green */
+    --color-leetcode-dark-medium: #FFB800;
+    /* medium problem yellow */
+    --color-leetcode-dark-hard: #FF375F;
+    /* hard problem red */
+    --color-leetcode-dark-background: #1A1A1A;
+    /* dark background */
+    --color-leetcode-dark-sidebar: #262626;
+    /* dark sidebar */
+    --color-leetcode-dark-text: #FFFFFF;
+    /* light text */
+    --color-leetcode-dark-muted: #A0AEC0;
+    /* muted text */
+    --color-leetcode-dark-third: #404040;
+    /* dark borders */
+    --color-leetcode-dark-hover: #2D3748;
+    /* dark hover */
+}
+
+body {
+    font-family: "Alegreya Sans", sans-serif;
+    font-style: normal;
+}
