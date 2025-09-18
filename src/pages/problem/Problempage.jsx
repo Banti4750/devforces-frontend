@@ -11,9 +11,9 @@ const Problempage = () => {
             {/* Main container */}
             <div className='container mx-auto px-4 py-6 max-w-3/4'>
                 {/* Grid layout */}
-                <div className='grid grid-cols-1 lg:grid-cols-9 gap-6 h-full'>
+                <div className='grid grid-cols-1 lg:grid-cols-10 gap-6 h-full'>
                     {/* Problem section - takes 6/9 columns on large screens */}
-                    <div className='lg:col-span-6'>
+                    <div className='lg:col-span-7'>
                         <div className='bg-leetcode-dark-sidebar rounded-lg p-6 h-full'>
                             <Problem />
                         </div>

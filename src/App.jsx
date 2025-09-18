@@ -21,7 +21,14 @@ function App() {
           }
         />
       </Routes>
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar={false}
+        newestOnTop={false} theme="dark" closeOnClick={true}
+        rtl={false}
+        pauseOnFocusLoss={true}
+        draggable={true}
+        pauseOnHover={true}
+        limit={5}
+        closeButton={true} />
     </>
   );
 }
