@@ -12,22 +12,22 @@ const UpcomingContest = () => {
                 <div className='p-1'>
                     <div className='flex flex-col'>
                         <div className='p-1 px-4 '>
-                            <h1 className='text-leetcode-dark-text font-bold'>Devforces round 403</h1>
+                            <h1 className='text-leetcode-dark-text font-bold text-sm'>Devforces round 403</h1>
                             <p className='text-leetcode-dark-muted text-xs '>Tommarow 14:00 UTC</p>
                             <div className='border-b border-stone-600 mt-1' />
                         </div>
                         <div className='p-1 px-4 '>
-                            <h1 className='text-leetcode-dark-text font-bold'>Devforces round 403</h1>
+                            <h1 className='text-leetcode-dark-text font-bold text-sm'>Devforces round 403</h1>
                             <p className='text-leetcode-dark-muted text-xs '>Tommarow 14:00 UTC</p>
                             <div className='border-b border-stone-600 mt-1' />
                         </div>
                         <div className='p-1 px-4 '>
-                            <h1 className='text-leetcode-dark-text font-bold'>Devforces round 403</h1>
+                            <h1 className='text-leetcode-dark-text font-bold text-sm'>Devforces round 403</h1>
                             <p className='text-leetcode-dark-muted text-xs '>Tommarow 14:00 UTC</p>
                             <div className='border-b border-stone-600 mt-1' />
                         </div>
                         <div className='p-1 px-4'>
-                            <h1 className='text-leetcode-dark-text font-bold'>Devforces round 403</h1>
+                            <h1 className='text-leetcode-dark-text font-bold text-sm'>Devforces round 403</h1>
                             <p className='text-leetcode-dark-muted text-xs '>Tommarow 14:00 UTC</p>
                         </div>
                     </div>

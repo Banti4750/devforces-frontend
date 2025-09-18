@@ -13,25 +13,25 @@ const Progress = () => {
                 <div className='flex flex-col space-y-4'>
                     <div className='flex flex-row space-x-4'>
                         <div className='bg-leetcode-dark-third rounded-lg p-4 flex-1 text-center'>
-                            <h1 className='text-leetcode-dark-text text-2xl font-bold'>23</h1>
-                            <p className='text-leetcode-dark-muted'>Easy Problems</p>
+                            <h1 className='text-leetcode-dark-text text-xl font-bold '>23</h1>
+                            <p className='text-leetcode-dark-muted text-sm'>Easy Problems</p>
                         </div>
 
                         <div className='bg-leetcode-dark-third rounded-lg p-4 flex-1 text-center'>
-                            <h1 className='text-leetcode-dark-text text-2xl font-bold'>15</h1>
-                            <p className='text-leetcode-dark-muted'>Attepmted</p>
+                            <h1 className='text-leetcode-dark-text text-xl font-bold '>15</h1>
+                            <p className='text-leetcode-dark-muted text-sm'>Attepmted</p>
                         </div>
                     </div>
 
                     <div className='flex flex-row space-x-4'>
                         <div className='bg-leetcode-dark-third rounded-lg p-4 flex-1 text-center'>
-                            <h1 className='text-leetcode-dark-text text-2xl font-bold'>8</h1>
-                            <p className='text-leetcode-dark-muted'>Dev rating</p>
+                            <h1 className='text-leetcode-dark-text text-xl font-bold'>8</h1>
+                            <p className='text-leetcode-dark-muted text-sm'>Dev rating</p>
                         </div>
 
                         <div className='bg-leetcode-dark-third rounded-lg p-4 flex-1 text-center'>
-                            <h1 className='text-leetcode-dark-text text-2xl font-bold'>46</h1>
-                            <p className='text-leetcode-dark-muted'>Total Solved</p>
+                            <h1 className='text-leetcode-dark-text text-xl font-bold'>46</h1>
+                            <p className='text-leetcode-dark-muted text-sm'>Total Solved</p>
                         </div>
                     </div>
                 </div>

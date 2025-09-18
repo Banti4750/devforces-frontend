@@ -14,41 +14,41 @@ const TopDeveloper = () => {
                         <div className='p-1 px-4 flex justify-between items-center'>
                             <div className='flex items-center gap-2'>
                                 <h1 className='text-leetcode-dark-muted font-bold'>1.</h1>
-                                <p className='text-leetcode-dark-text'>Banti Kumar</p>
+                                <p className='text-leetcode-dark-text text-sm'>Banti Kumar</p>
                             </div>
-                            <p className='text-leetcode-dark-muted  '>2345</p>
+                            <p className='text-leetcode-dark-muted text-sm '>2345</p>
                         </div>
                         <div className=' mx-4 border-b border-stone-600 mt-1' />
                         <div className='p-1 px-4 flex justify-between items-center'>
                             <div className='flex items-center gap-2'>
                                 <h1 className='text-leetcode-dark-muted font-bold'>2.</h1>
-                                <p className='text-leetcode-dark-text'>Sarah Johnson</p>
+                                <p className='text-leetcode-dark-text text-sm'>Sarah Johnson</p>
                             </div>
-                            <p className='text-leetcode-dark-muted  '>2300</p>
+                            <p className='text-leetcode-dark-muted  text-sm'>2300</p>
                         </div>
                         <div className=' mx-4 border-b border-stone-600 mt-1' />
                         <div className='p-1 px-4 flex justify-between items-center'>
                             <div className='flex items-center gap-2'>
                                 <h1 className='text-leetcode-dark-muted font-bold'>3.</h1>
-                                <p className='text-leetcode-dark-text'>Alex Chen</p>
+                                <p className='text-leetcode-dark-text text-sm'>Alex Chen</p>
                             </div>
-                            <p className='text-leetcode-dark-muted  '>2145</p>
+                            <p className='text-leetcode-dark-muted  text-sm'>2145</p>
                         </div>
                         <div className=' mx-4 border-b border-stone-600 mt-1' />
                         <div className='p-1 px-4 flex justify-between items-center'>
                             <div className='flex items-center gap-2'>
                                 <h1 className='text-leetcode-dark-muted font-bold'>4.</h1>
-                                <p className='text-leetcode-dark-text'>Maria Garcia</p>
+                                <p className='text-leetcode-dark-text text-sm'>Maria Garcia</p>
                             </div>
-                            <p className='text-leetcode-dark-muted  '>245</p>
+                            <p className='text-leetcode-dark-muted  text-sm'>245</p>
                         </div>
                         <div className=' mx-4 border-b border-stone-600 mt-1' />
                         <div className='p-1 px-4 flex justify-between items-center'>
                             <div className='flex items-center gap-2'>
                                 <h1 className='text-leetcode-dark-muted font-bold'>5.</h1>
-                                <p className='text-leetcode-dark-text'>David Wilson</p>
+                                <p className='text-leetcode-dark-text text-sm'>David Wilson</p>
                             </div>
-                            <p className='text-leetcode-dark-muted  '>235</p>
+                            <p className='text-leetcode-dark-muted  text-sm'>235</p>
                         </div>
                     </div>
                 </div>
