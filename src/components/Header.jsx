@@ -1,16 +1,22 @@
 import React from 'react'
 import { useAuth } from '../provider/AuthProvider'
 import { toast } from 'react-toastify';
+import { useLocation } from 'react-router-dom';
 
 
 
 const Header = () => {
     const { user, logout } = useAuth();
+    const location = useLocation();
 
     const handleLogout = () => {
         toast.success("Logout Sucessfully !!!")
         logout();
     };
+
+    const isProblemsActive =
+        location.pathname === "/problem" ||
+        location.pathname.startsWith("/problem/");
 
     console.log(user)
     return (
@@ -23,7 +29,10 @@ const Header = () => {
 
                 {/* navigation */}
                 <nav className='hidden md:flex gap-8'>
-                    <a href="/problem" className='text-leetcode-dark-muted hover:text-leetcode-dark-text transition-colors duration-200'>
+                    <a href="/problem" className={`transition-colors duration-200 ${isProblemsActive
+                        ? "text-leetcode-dark-text "
+                        : "text-leetcode-dark-muted hover:text-leetcode-dark-text"
+                        }`}>
                         Problems
                     </a>
                     <a href="/contest" className='text-leetcode-dark-muted hover:text-leetcode-dark-text transition-colors duration-200'>

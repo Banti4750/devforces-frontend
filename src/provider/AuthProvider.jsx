@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
 
         if (token) {
             setUser({ token });
-            navigate("/dashboard");
+            // navigate("/dashboard");
         } else {
             setUser(null);
             navigate("/");
@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
     const login = (token) => {
         localStorage.setItem("token", token);
         setUser({ token });
-        navigate("/dashboard");
+        navigate("/problem");
     };
 
     const logout = () => {
