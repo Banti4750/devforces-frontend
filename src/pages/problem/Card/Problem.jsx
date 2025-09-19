@@ -10,13 +10,69 @@ const ProblemList = () => {
     const [problems, setProblems] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [tags, setTags] = useState([]);
+    const [categories, setCategories] = useState([]);
 
     const dropdownRefs = useRef({});
 
+    //fetch tag
+    async function fetchTags() {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/tags`, {
+                method: 'GET',
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+
+            const data = await response.json();
+
+            if (data.success) {
+                setTags(data.tags);
+            } else {
+                setError('Failed to fetch tags');
+            }
+
+        } catch (err) {
+            setError('Error fetching tags: ' + err.message);
+        }
+    }
+
+    // fetch categories
+    async function fetchCategories() {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/tags/category`, {
+                method: 'GET',
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                setCategories(data.category);
+            } else {
+                setError('Failed to fetch category');
+            }
+
+        } catch (err) {
+            setError('Error fetching category: ' + err.message);
+        }
+    }
+
+    useEffect(() => {
+        fetchTags();
+        fetchCategories()
+    }, [])
+
     // Filter options
-    const categories = ['ALL', 'Algorithms', 'Database', 'Shell', 'Concurrency'];
+    // const categories = ['ALL', 'Algorithms', 'Database', 'Shell', 'Concurrency'];
     const difficulties = ['ALL', 'EASY', 'MEDIUM', 'HARD'];
-    const tags = ['Array', 'String', 'Hash Table', 'Dynamic Programming', 'Math', 'Sorting', 'Greedy', 'Depth-First Search', 'Binary Search', 'Tree', 'Breadth-First Search', 'Matrix', 'Two Pointers', 'Binary Tree', 'Bit Manipulation', 'Heap', 'Stack', 'Graph'];
+    // const tags = ['Array', 'String', 'Hash Table', 'Dynamic Programming', 'Math', 'Sorting', 'Greedy', 'Depth-First Search', 'Binary Search', 'Tree', 'Breadth-First Search', 'Matrix', 'Two Pointers', 'Binary Tree', 'Bit Manipulation', 'Heap', 'Stack', 'Graph'];
 
     // Fetch problems from API
     const fetchProblems = useCallback(async () => {
@@ -180,12 +236,12 @@ const ProblemList = () => {
                 <div className="absolute top-full left-16 mt-1 bg-leetcode-dark-sidebar border border-leetcode-dark-third rounded-md shadow-lg z-50 min-w-32">
                     {categories.map((category) => (
                         <button
-                            key={category}
-                            onClick={() => handleSelection('category', category)}
+                            key={category.category}
+                            onClick={() => handleSelection('category', category.category)}
                             className={`block w-full text-left px-3 py-2 text-sm hover:bg-leetcode-dark-third transition-colors text-leetcode-dark-text ${category === selectedCategory ? 'bg-leetcode-dark-third' : ''
                                 }`}
                         >
-                            {category}
+                            {category.category}
                         </button>
                     ))}
                 </div>
@@ -262,13 +318,13 @@ const ProblemList = () => {
                         const isSelected = selectedTags.includes(tag);
                         return (
                             <button
-                                key={tag}
-                                onClick={() => !isSelected && handleSelection('tag', tag)}
+                                key={tag.name}
+                                onClick={() => !isSelected && handleSelection('tag', tag.name)}
                                 disabled={isSelected}
                                 className={`block w-full text-left px-3 py-2 text-sm hover:bg-leetcode-dark-third transition-colors text-leetcode-dark-text ${isSelected ? 'bg-leetcode-dark-third opacity-50 cursor-not-allowed' : 'cursor-pointer'
                                     }`}
                             >
-                                {tag} {isSelected ? '✓' : ''}
+                                {tag.name} {isSelected ? '✓' : ''}
                             </button>
                         );
                     })}
