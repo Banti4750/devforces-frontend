@@ -1,25 +1,32 @@
 import './App.css'
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Router, useLocation } from "react-router-dom";
 import LandingPage from './components/Landingpage';
 import { ToastContainer } from "react-toastify";
 import Dashboard from './dashboard/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import Header from './components/Header';
+import ProblemPageById from './pages/problempage/ProblemPageById';
 
 function App() {
+  const location = useLocation();
+  console.log("Current path:", location.pathname);
   return (
     <>
+      <Header />
       <Routes>
         <Route path="/" element={<LandingPage />} />
+
         <Route
-          path="/dashboard"
+          path="/problem"
           element={
-            <ProtectedRoute>
-              <Header />
-              <Dashboard />
-            </ProtectedRoute>
+            // <ProtectedRoute>
+            <Dashboard />
+            // </ProtectedRoute>
           }
         />
+
+        {/* ✅ dynamic problem route */}
+        <Route path="/problem/:id" element={<ProblemPageById />} />
       </Routes>
       <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar={false}
         newestOnTop={false} theme="dark" closeOnClick={true}
@@ -29,6 +36,9 @@ function App() {
         pauseOnHover={true}
         limit={5}
         closeButton={true} />
+
+
+
     </>
   );
 }

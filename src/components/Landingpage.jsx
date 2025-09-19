@@ -112,7 +112,7 @@ const LandingPage = () => {
             setShowAuthModal(false);
 
             // Navigate to dashboard
-            navigate("/dashboard");
+            navigate("/problem");
         } catch (error) {
             console.error("Auth error:", error);
             toast.error("Server error, try again later!");

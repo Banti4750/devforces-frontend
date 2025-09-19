@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState, useCallback, useRef } from 'react'
 import { ChevronDown, X, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const ProblemList = () => {
     // State for filters and problems
@@ -12,7 +13,7 @@ const ProblemList = () => {
     const [error, setError] = useState(null);
     const [tags, setTags] = useState([]);
     const [categories, setCategories] = useState([]);
-
+    const navigate = useNavigate();
     const dropdownRefs = useRef({});
 
     //fetch tag
@@ -70,9 +71,7 @@ const ProblemList = () => {
     }, [])
 
     // Filter options
-    // const categories = ['ALL', 'Algorithms', 'Database', 'Shell', 'Concurrency'];
     const difficulties = ['ALL', 'EASY', 'MEDIUM', 'HARD'];
-    // const tags = ['Array', 'String', 'Hash Table', 'Dynamic Programming', 'Math', 'Sorting', 'Greedy', 'Depth-First Search', 'Binary Search', 'Tree', 'Breadth-First Search', 'Matrix', 'Two Pointers', 'Binary Tree', 'Bit Manipulation', 'Heap', 'Stack', 'Graph'];
 
     // Fetch problems from API
     const fetchProblems = useCallback(async () => {
@@ -398,9 +397,9 @@ const ProblemList = () => {
                                 <td className='p-3 '>
                                     <div className='flex items-start gap-3'>
                                         <span className='text-leetcode-dark-muted text-sm mt-0.5'>
-                                            {problem.id}.
+                                            {problem.sn}.
                                         </span>
-                                        <div className='flex flex-col gap-1'>
+                                        <div className='flex flex-col gap-1' onClick={() => navigate(`/problem/${problem.id}`)}>
                                             <span className='text-leetcode-dark-text hover:text-leetcode-dark-text/80 transition-colors'>
                                                 {problem.title}
                                             </span>
