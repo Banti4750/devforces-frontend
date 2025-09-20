@@ -1,7 +1,7 @@
 import React from 'react'
 import { useAuth } from '../provider/AuthProvider'
 import { toast } from 'react-toastify';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 
 
@@ -35,28 +35,29 @@ const Header = () => {
 
                 {/* navigation */}
                 <nav className='hidden md:flex gap-8'>
-                    <a href="/problem" className={`transition-colors duration-200 ${isProblemsActive
+                    <Link to="/problem" className={`transition-colors duration-200 ${isProblemsActive
                         ? "text-leetcode-dark-text "
                         : "text-leetcode-dark-muted hover:text-leetcode-dark-text"
                         }`}>
                         Problems
-                    </a>
-                    <a href="/contest" className={`transition-colors duration-200 ${isContestActive
+                    </Link>
+                    <Link to="/contest" className={`transition-colors duration-200 ${isContestActive
                         ? "text-leetcode-dark-text "
                         : "text-leetcode-dark-muted hover:text-leetcode-dark-text"
                         }`}
+
                     >
                         Contests
-                    </a>
-                    <a href="/leaderboard" className='text-leetcode-dark-muted hover:text-leetcode-dark-text transition-colors duration-200'>
+                    </Link>
+                    <Link to="/leaderboard" className='text-leetcode-dark-muted hover:text-leetcode-dark-text transition-colors duration-200'>
                         Leaderboard
-                    </a>
-                    <a href="/tutorial" className='text-leetcode-dark-muted hover:text-leetcode-dark-text transition-colors duration-200'>
+                    </Link>
+                    <Link to="/tutorial" className='text-leetcode-dark-muted hover:text-leetcode-dark-text transition-colors duration-200'>
                         Tutorial
-                    </a>
-                    <a href="/practice" className='text-leetcode-dark-muted hover:text-leetcode-dark-text transition-colors duration-200'>
+                    </Link>
+                    <Link to="/practice" className='text-leetcode-dark-muted hover:text-leetcode-dark-text transition-colors duration-200'>
                         Practice
-                    </a>
+                    </Link>
                 </nav>
 
                 {/* profile */}
