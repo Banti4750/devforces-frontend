@@ -1,6 +1,7 @@
 import { Trophy, Calendar } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ContestList = () => {
     const [activeTab, setActiveTab] = useState('upcoming');
@@ -28,6 +29,7 @@ const ContestList = () => {
 
         } catch (err) {
             console.log('Error fetching contests: ' + err.message);
+            toast.error('Failed to fetch contests');
         }
     }
 
@@ -61,7 +63,7 @@ const ContestList = () => {
 
         } catch (err) {
             console.log('Error registering for contest: ' + err.message);
-            alert('Registration failed. Please try again.');
+            toast.error('Registration failed. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -69,6 +71,11 @@ const ContestList = () => {
 
     // unregister from contest
     async function handleUnregister(registrationId) {
+        if (!registrationId) {
+            toast.error('Registration ID not found');
+            return;
+        }
+
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
@@ -97,7 +104,7 @@ const ContestList = () => {
 
         } catch (err) {
             console.log('Error unregistering from contest: ' + err.message);
-            alert('Unregistration failed. Please try again.');
+            toast.error('Unregistration failed. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -117,6 +124,12 @@ const ContestList = () => {
                 >
                     Register
                 </button>
+            );
+        } else if (contest.status === 'running') {
+            return (
+                <span className="px-2 py-1 bg-orange-600/20 text-orange-400 text-xs rounded-md border border-orange-600/30">
+                    Running
+                </span>
             );
         } else {
             return (
@@ -149,6 +162,15 @@ const ContestList = () => {
             );
         }
 
+        // If registered and running, show "View Contest" button
+        if (contest.status === 'running' && isRegistered) {
+            return (
+                <button className="px-3 py-1 bg-green-600/20 text-green-400 text-xs rounded-md border border-green-600/30 hover:bg-green-600/30 transition-colors">
+                    View Contest
+                </button>
+            );
+        }
+
         // For finished contests where user was registered
         return (
             <span className="px-3 py-1 bg-blue-600/20 text-blue-400 text-xs rounded-md border border-blue-600/30">
@@ -157,9 +179,21 @@ const ContestList = () => {
         );
     };
 
-    const currentContests = activeTab === 'upcoming'
-        ? allContests.filter(contest => contest.status === 'upcoming')
-        : allContests.filter(contest => contest.status === 'finished');
+    // Fixed filtering logic to handle all three tabs
+    const getFilteredContests = () => {
+        switch (activeTab) {
+            case 'upcoming':
+                return allContests.filter(contest => contest.status === 'upcoming');
+            case 'past':
+                return allContests.filter(contest => contest.status === 'finished');
+            case 'running':
+                return allContests.filter(contest => contest.status === 'running');
+            default:
+                return [];
+        }
+    };
+
+    const currentContests = getFilteredContests();
 
     return (
         <>
@@ -229,46 +263,54 @@ const ContestList = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {currentContests.map((contest, index) => (
-                                        <tr
-                                            key={`${contest.id}-${index}`}
-                                            className='border-b border-leetcode-dark-third hover:bg-leetcode-dark-third/30 transition-colors cursor-pointer'
-                                        >
-                                            <td className='p-3'>
-                                                <span className='text-leetcode-dark-text hover:text-leetcode-dark-text/80 transition-colors'>
-                                                    {contest.name}
-                                                </span>
-                                            </td>
-                                            <td className='p-3 text-center'>
-                                                <div className='flex flex-wrap gap-1 justify-center'>
-                                                    {contest.writers.split(', ').map((writer, idx) => (
-                                                        <span
-                                                            key={idx}
-                                                            className='text-blue-400 hover:text-blue-300 cursor-pointer text-sm'
-                                                        >
-                                                            {writer}{idx < contest.writers.split(', ').length - 1 ? ',' : ''}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            </td>
-                                            <td className='p-3 text-center text-leetcode-dark-muted text-sm'>
-                                                {contest.start}
-                                            </td>
-                                            <td className='p-3 text-center'>
-                                                <span className='text-leetcode-dark-text text-sm font-medium'>
-                                                    {contest.length}
-                                                </span>
-                                            </td>
-                                            <td className='p-3 text-center'>
-                                                <span className='text-leetcode-dark-text text-sm'>
-                                                    {contest.participants}
-                                                </span>
-                                            </td>
-                                            <td className='p-3 text-center'>
-                                                {getActionButton(contest)}
+                                    {currentContests.length > 0 ? (
+                                        currentContests.map((contest, index) => (
+                                            <tr
+                                                key={`${contest.id}-${index}`}
+                                                className='border-b border-leetcode-dark-third hover:bg-leetcode-dark-third/30 transition-colors cursor-pointer'
+                                            >
+                                                <td className='p-3'>
+                                                    <span className='text-leetcode-dark-text hover:text-leetcode-dark-text/80 transition-colors'>
+                                                        {contest.name}
+                                                    </span>
+                                                </td>
+                                                <td className='p-3 text-center'>
+                                                    <div className='flex flex-wrap gap-1 justify-center'>
+                                                        {contest.writers?.split(', ').map((writer, idx) => (
+                                                            <span
+                                                                key={idx}
+                                                                className='text-blue-400 hover:text-blue-300 cursor-pointer text-sm'
+                                                            >
+                                                                {writer}{idx < contest.writers.split(', ').length - 1 ? ',' : ''}
+                                                            </span>
+                                                        )) || 'N/A'}
+                                                    </div>
+                                                </td>
+                                                <td className='p-3 text-center text-leetcode-dark-muted text-sm'>
+                                                    {contest.start || 'N/A'}
+                                                </td>
+                                                <td className='p-3 text-center'>
+                                                    <span className='text-leetcode-dark-text text-sm font-medium'>
+                                                        {contest.length || 'N/A'}
+                                                    </span>
+                                                </td>
+                                                <td className='p-3 text-center'>
+                                                    <span className='text-leetcode-dark-text text-sm'>
+                                                        {contest.participants || '0'}
+                                                    </span>
+                                                </td>
+                                                <td className='p-3 text-center'>
+                                                    {getActionButton(contest)}
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="6" className="p-8 text-center text-leetcode-dark-muted">
+                                                No {activeTab} contests found
                                             </td>
                                         </tr>
-                                    ))}
+                                    )}
                                 </tbody>
                             </table>
                         </div>
@@ -303,6 +345,7 @@ const ContestList = () => {
                     </div>
                 </div>
             </div>
+
         </>
     );
 };
