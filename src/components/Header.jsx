@@ -1,13 +1,15 @@
 import React from 'react'
 import { useAuth } from '../provider/AuthProvider'
 import { toast } from 'react-toastify';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 
 
 const Header = () => {
     const { user, logout } = useAuth();
     const location = useLocation();
+    const navigate = useNavigate();
+
 
     const handleLogout = () => {
         toast.success("Logout Sucessfully !!!")
@@ -17,6 +19,10 @@ const Header = () => {
     const isProblemsActive =
         location.pathname === "/problem" ||
         location.pathname.startsWith("/problem/");
+
+    const isContestActive =
+        location.pathname === '/contest' ||
+        location.pathname.startsWith("/contest/");
 
     console.log(user)
     return (
@@ -35,7 +41,11 @@ const Header = () => {
                         }`}>
                         Problems
                     </a>
-                    <a href="/contest" className='text-leetcode-dark-muted hover:text-leetcode-dark-text transition-colors duration-200'>
+                    <a href="/contest" className={`transition-colors duration-200 ${isContestActive
+                        ? "text-leetcode-dark-text "
+                        : "text-leetcode-dark-muted hover:text-leetcode-dark-text"
+                        }`}
+                    >
                         Contests
                     </a>
                     <a href="/leaderboard" className='text-leetcode-dark-muted hover:text-leetcode-dark-text transition-colors duration-200'>

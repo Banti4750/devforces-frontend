@@ -6,6 +6,7 @@ import Dashboard from './dashboard/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import Header from './components/Header';
 import ProblemPageById from './pages/problempage/ProblemPageById';
+import ContestList from './pages/contest/ContestList';
 
 function App() {
   const location = useLocation();
@@ -25,8 +26,9 @@ function App() {
           }
         />
 
-        {/* ✅ dynamic problem route */}
+        {/* dynamic problem route */}
         <Route path="/problem/:id" element={<ProblemPageById />} />
+        <Route path='/contest' element={<ContestList />} />
       </Routes>
       <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar={false}
         newestOnTop={false} theme="dark" closeOnClick={true}
