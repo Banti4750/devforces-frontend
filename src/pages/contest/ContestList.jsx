@@ -1,9 +1,11 @@
 import { Trophy, Calendar } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
+import { toast } from 'react-toastify';
 
 const ContestList = () => {
     const [activeTab, setActiveTab] = useState('upcoming');
     const [allContests, setAllContest] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     // fetch all contests
     async function fetchContests() {
@@ -15,7 +17,32 @@ const ContestList = () => {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
+            });
 
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            setAllContest(data);
+
+        } catch (err) {
+            console.log('Error fetching contests: ' + err.message);
+        }
+    }
+
+    // register for contest
+    async function handleRegister(contestId) {
+        setLoading(true);
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/contest-registration`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ contestId })
             });
 
             if (!response.ok) {
@@ -24,24 +51,72 @@ const ContestList = () => {
 
             const data = await response.json();
 
-            setAllContest(data);
+            if (data.success) {
+                // Refresh contest to get updated data
+                fetchContests();
+                toast.success('Successfully registered for contest!');
+            } else {
+                toast.error(data.message || 'Registration failed');
+            }
 
         } catch (err) {
-            console.log('Error fetching contests: ' + err.message);
+            console.log('Error registering for contest: ' + err.message);
+            alert('Registration failed. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    // unregister from contest
+    async function handleUnregister(registrationId) {
+        setLoading(true);
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/contest-registration`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: registrationId })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Refresh registrations to get updated data
+                fetchContests();
+                toast.success('Successfully unregistered from contest!');
+            } else {
+                toast.error(data.message || 'Unregistration failed');
+            }
+
+        } catch (err) {
+            console.log('Error unregistering from contest: ' + err.message);
+            alert('Unregistration failed. Please try again.');
+        } finally {
+            setLoading(false);
         }
     }
 
     useEffect(() => {
-        fetchContests()
+        fetchContests();
     }, [])
 
-
-    const getStatusBadge = (status) => {
-        if (status === 'upcoming') {
+    const getStatusBadge = (contest) => {
+        if (contest.status === 'upcoming') {
             return (
-                <span className="px-2 py-1 bg-green-600/20 text-green-400 text-xs rounded-md border border-green-600/30">
+                <button
+                    onClick={() => handleRegister(contest.id)}
+                    disabled={loading}
+                    className="px-2 py-1 bg-green-600/20 text-green-400 text-xs rounded-md border border-green-600/30 hover:bg-green-600/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                     Register
-                </span>
+                </button>
             );
         } else {
             return (
@@ -52,6 +127,35 @@ const ContestList = () => {
         }
     };
 
+    const getActionButton = (contest) => {
+        // Find registration for this contest
+        const isRegistered = contest.isRegistered
+
+        // If not registered, show status badge
+        if (!isRegistered) {
+            return getStatusBadge(contest);
+        }
+
+        // If registered and upcoming, show unregister button
+        if (contest.status === 'upcoming' && isRegistered) {
+            return (
+                <button
+                    onClick={() => handleUnregister(contest.registrationId)}
+                    disabled={loading}
+                    className="px-3 py-1 bg-red-600/20 text-red-400 text-xs rounded-md border border-red-600/30 hover:bg-red-600/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    {loading ? 'Loading...' : 'Unregister'}
+                </button>
+            );
+        }
+
+        // For finished contests where user was registered
+        return (
+            <span className="px-3 py-1 bg-blue-600/20 text-blue-400 text-xs rounded-md border border-blue-600/30">
+                View Results
+            </span>
+        );
+    };
 
     const currentContests = activeTab === 'upcoming'
         ? allContests.filter(contest => contest.status === 'upcoming')
@@ -97,9 +201,8 @@ const ContestList = () => {
                             >
                                 Running
                             </button>
-
-
                         </div>
+
                         {/* contest table */}
                         <div className='mt-4 overflow-x-auto'>
                             <table className='w-full border-collapse'>
@@ -162,7 +265,7 @@ const ContestList = () => {
                                                 </span>
                                             </td>
                                             <td className='p-3 text-center'>
-                                                {getStatusBadge(contest.status)}
+                                                {getActionButton(contest)}
                                             </td>
                                         </tr>
                                     ))}
