@@ -1,12 +1,14 @@
 import { Trophy, Calendar } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import { toast, ToastContainer } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const ContestList = () => {
     const [activeTab, setActiveTab] = useState('upcoming');
     const [allContests, setAllContest] = useState([]);
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     // fetch all contests
     async function fetchContests() {
@@ -269,7 +271,7 @@ const ContestList = () => {
                                                 key={`${contest.id}-${index}`}
                                                 className='border-b border-leetcode-dark-third hover:bg-leetcode-dark-third/30 transition-colors cursor-pointer'
                                             >
-                                                <td className='p-3'>
+                                                <td className='p-3' onClick={() => navigate(`/contest/${contest.id}`)}>
                                                     <span className='text-leetcode-dark-text hover:text-leetcode-dark-text/80 transition-colors'>
                                                         {contest.name}
                                                     </span>
