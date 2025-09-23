@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 
 const ProblemCard = ({ id }) => {
     const [problem, setProblem] = useState(null);
@@ -57,22 +58,41 @@ const ProblemCard = ({ id }) => {
     const handleFileChange = (event) => {
         setSelectedFile(event.target.files[0]);
     };
-
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!selectedFile) {
-            alert('Please select a file to submit');
+            alert('Please select a file');
             return;
         }
 
-        console.log('Submitting:', {
-            file: selectedFile,
-            language: selectedLanguage,
-            problemId: id
-        });
+        // Read the file as text
+        const fileText = await selectedFile.text();
 
-        // Add your submission logic here
-        alert(`Submitting ${selectedFile.name} in ${selectedLanguage}`);
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/submission`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({
+                    problemId: problem.id,
+                    code: fileText, // send code as string
+                    language: selectedLanguage
+                })
+            });
+
+            if (!response.ok) {
+                toast.error("Failed to submit solution");
+            } else {
+                toast.success("Solution submitted");
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error("Something went wrong");
+        }
     };
+
+
 
     if (loading) {
         return (

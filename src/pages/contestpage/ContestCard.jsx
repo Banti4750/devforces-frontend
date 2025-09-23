@@ -131,7 +131,7 @@ const ContestCard = ({ id }) => {
                                                         </span>
                                                     </td>
                                                     <td className='p-3 text-center text-leetcode-dark-muted  text-sm'>
-                                                        {problem.timeLimit || 'N/A'}
+                                                        {problem.problem.timeLimit || 'N/A'}
                                                     </td>
                                                     <td className='p-3 text-center text-leetcode-dark-muted text-sm'>
                                                         <div className='flex items-center justify-center gap-1'>
