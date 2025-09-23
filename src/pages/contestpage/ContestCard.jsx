@@ -1,63 +1,43 @@
 import { Trophy, User, Clock, FileText, Award } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import SubmissionCard from './SubmissionCard';
 import StandingCard from './StandingCard';
+import { useNavigate } from 'react-router-dom';
 
 const ContestCard = ({ id }) => {
     const [activeTab, setActiveTab] = useState('problems');
+    const [problems, setproblems] = useState([]);
+    const navigate = useNavigate();
 
-    const problems = [
-        {
-            id: 1,
-            index: 'A',
-            name: "Setup auth",
-            timeLimit: "10",
-            totalSubmission: "100"
-        },
-        {
-            id: 2,
-            index: 'B',
-            name: "Jwt base login ",
-            timeLimit: "10",
-            totalSubmission: "100"
-        },
-        {
-            id: 3,
-            index: 'C',
-            name: "Setup middleware",
-            timeLimit: "10",
-            totalSubmission: "100"
-        },
-        {
-            id: 4,
-            index: 'D',
-            name: "Write schema for user ",
-            timeLimit: "10",
-            totalSubmission: "100"
-        },
-        {
-            id: 5,
-            index: 'E',
-            name: "Write api for login ",
-            timeLimit: "10",
-            totalSubmission: "110"
-        },
-        {
-            id: 6,
-            index: 'F',
-            name: "Write api for get profile",
-            timeLimit: "10",
-            totalSubmission: "10"
-        },
-        {
-            id: 7,
-            index: 'G',
-            name: "Write api for get profile",
-            timeLimit: "10",
-            totalSubmission: "10"
-        },
+    async function fetchProblems() {
+        const token = await localStorage.getItem('token')
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/contests/${id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+            });
 
-    ]
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            setproblems(data.problems)
+
+        } catch (error) {
+            console.log('Error fetching contest problems: ' + err.message);
+            toast.error('Failed to fetch contests problems');
+        }
+    }
+
+    useEffect(() => {
+        fetchProblems()
+    }, [])
+
+    console.log(problems)
 
     const guidelines = [
         {
@@ -140,13 +120,14 @@ const ContestCard = ({ id }) => {
                                                 <tr
                                                     key={`${problem.id}-${index}`}
                                                     className='border-b border-leetcode-dark-third hover:bg-leetcode-dark-third/30 transition-colors cursor-pointer'
+                                                    onClick={() => navigate(`/problem/${problem.problem.id}`)}
                                                 >
                                                     <td className='p-3 text-left text-leetcode-dark-muted text-sm'>
                                                         {problem.index || 'N/A'}
                                                     </td>
                                                     <td className='p-3' >
                                                         <span className='text-leetcode-dark-text text-left hover:text-leetcode-dark-text/80 transition-colors'>
-                                                            {problem.name}
+                                                            {problem.problem.title}
                                                         </span>
                                                     </td>
                                                     <td className='p-3 text-center text-leetcode-dark-muted  text-sm'>
