@@ -1,4 +1,4 @@
-import { Trophy, Calendar } from 'lucide-react'
+import { Trophy, Calendar, Clock } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -7,8 +7,52 @@ import 'react-toastify/dist/ReactToastify.css';
 const ContestList = () => {
     const [activeTab, setActiveTab] = useState('upcoming');
     const [allContests, setAllContest] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
+    const [loadingStates, setLoadingStates] = useState({});
+    const [timers, setTimers] = useState({}); // Store timer values for each contest
+    const navigate = useNavigate()
+
+
+    // Calculate time remaining until contest start
+    const calculateTimeRemaining = (startTime) => {
+        const now = new Date();
+        const contestStart = new Date(startTime);
+        const diff = contestStart - now;
+
+        if (diff <= 0) {
+            return { expired: true, display: 'Started' };
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        if (days > 0) {
+            return { expired: false, display: `${days}d ${hours}h ${minutes}m ${seconds}s` };
+        } else if (hours > 0) {
+            return { expired: false, display: `${hours}h ${minutes}m ${seconds}s` };
+        } else {
+            return { expired: false, display: `${minutes}m ${seconds}s` };
+        }
+    };
+
+    // Update timers every second
+    useEffect(() => {
+        const updateTimers = () => {
+            const newTimers = {};
+            allContests.forEach(contest => {
+                if (contest.status === 'upcoming' && contest.start) {
+                    newTimers[contest.id] = calculateTimeRemaining(contest.start);
+                }
+            });
+            setTimers(newTimers);
+        };
+
+        updateTimers(); // Initial calculation
+        const interval = setInterval(updateTimers, 1000);
+
+        return () => clearInterval(interval);
+    }, [allContests]);
 
     // fetch all contests
     async function fetchContests() {
@@ -37,7 +81,7 @@ const ContestList = () => {
 
     // register for contest
     async function handleRegister(contestId) {
-        setLoading(true);
+        setLoadingStates(prev => ({ ...prev, [contestId]: true }));
         try {
             const token = localStorage.getItem('token');
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/contest-registration`, {
@@ -67,18 +111,18 @@ const ContestList = () => {
             console.log('Error registering for contest: ' + err.message);
             toast.error('Registration failed. Please try again.');
         } finally {
-            setLoading(false);
+            setLoadingStates(prev => ({ ...prev, [contestId]: false }));
         }
     }
 
     // unregister from contest
-    async function handleUnregister(registrationId) {
+    async function handleUnregister(contestId, registrationId) {
         if (!registrationId) {
             toast.error('Registration ID not found');
             return;
         }
 
-        setLoading(true);
+        setLoadingStates(prev => ({ ...prev, [contestId]: true }));
         try {
             const token = localStorage.getItem('token');
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/contest-registration`, {
@@ -108,7 +152,7 @@ const ContestList = () => {
             console.log('Error unregistering from contest: ' + err.message);
             toast.error('Unregistration failed. Please try again.');
         } finally {
-            setLoading(false);
+            setLoadingStates(prev => ({ ...prev, [contestId]: false }));
         }
     }
 
@@ -117,55 +161,67 @@ const ContestList = () => {
     }, [])
 
     const getStatusBadge = (contest) => {
-        if (contest.status === 'upcoming') {
+        const isLoading = loadingStates[contest.id];
+        if (contest.status === "upcoming") {
             return (
                 <button
                     onClick={() => handleRegister(contest.id)}
-                    disabled={loading}
+                    disabled={isLoading}
                     className="px-2 py-1 bg-green-600/20 text-green-400 text-xs rounded-md border border-green-600/30 hover:bg-green-600/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    Register
+                    {isLoading ? "Loading..." : "Register"}
                 </button>
             );
-        } else if (contest.status === 'running') {
+        }
+
+        if (contest.status === "running") {
             return (
                 <span className="px-2 py-1 bg-orange-600/20 text-orange-400 text-xs rounded-md border border-orange-600/30">
                     Running
                 </span>
             );
-        } else {
+        }
+
+        if (contest.status === "finished") {
             return (
                 <span className="px-2 py-1 bg-blue-600/20 text-blue-400 text-xs rounded-md border border-blue-600/30">
                     Results
                 </span>
             );
         }
+
+        // fallback for unexpected status
+        return (
+            <span className="px-2 py-1 bg-gray-600/20 text-gray-400 text-xs rounded-md border border-gray-600/30">
+                Unknown
+            </span>
+        );
     };
 
     const getActionButton = (contest) => {
-        // Find registration for this contest
-        const isRegistered = contest.isRegistered
+        const isRegistered = contest.isRegistered;
+        const isLoading = loadingStates[contest.id];
 
-        // If not registered, show status badge
+        // Not registered → show status badge
         if (!isRegistered) {
             return getStatusBadge(contest);
         }
 
-        // If registered and upcoming, show unregister button
-        if (contest.status === 'upcoming' && isRegistered) {
+        // Registered & upcoming → allow unregister
+        if (contest.status === "upcoming") {
             return (
                 <button
-                    onClick={() => handleUnregister(contest.registrationId)}
-                    disabled={loading}
+                    onClick={() => handleUnregister(contest.id, contest.registrationId)}
+                    disabled={isLoading}
                     className="px-3 py-1 bg-red-600/20 text-red-400 text-xs rounded-md border border-red-600/30 hover:bg-red-600/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    {loading ? 'Loading...' : 'Unregister'}
+                    {isLoading ? "Loading..." : "Unregister"}
                 </button>
             );
         }
 
-        // If registered and running, show "View Contest" button
-        if (contest.status === 'running' && isRegistered) {
+        // Registered & running → View Contest
+        if (contest.status === "running") {
             return (
                 <button className="px-3 py-1 bg-green-600/20 text-green-400 text-xs rounded-md border border-green-600/30 hover:bg-green-600/30 transition-colors">
                     View Contest
@@ -173,10 +229,40 @@ const ContestList = () => {
             );
         }
 
-        // For finished contests where user was registered
+        // Registered & finished → View Results
+        if (contest.status === "finished") {
+            return (
+                <span className="px-3 py-1 bg-blue-600/20 text-blue-400 text-xs rounded-md border border-blue-600/30">
+                    View Results
+                </span>
+            );
+        }
+
+        // fallback
+        return getStatusBadge(contest);
+    };
+
+    // Timer component
+    const ContestTimer = ({ contest }) => {
+        const timer = timers[contest.id];
+
+        if (contest.status !== 'upcoming' || !timer) {
+            return <span className="text-leetcode-dark-muted text-xs">-</span>;
+        }
+
+        if (timer.expired) {
+            return (
+                <span className="text-red-400 text-xs flex items-center gap-1 justify-center">
+                    <Clock className="h-3 w-3" />
+                    {timer.display}
+                </span>
+            );
+        }
+
         return (
-            <span className="px-3 py-1 bg-blue-600/20 text-blue-400 text-xs rounded-md border border-blue-600/30">
-                View Results
+            <span className="text-blue-400 text-xs flex items-center gap-1 justify-center">
+                <Clock className="h-3 w-3" />
+                {timer.display}
             </span>
         );
     };
@@ -260,18 +346,26 @@ const ContestList = () => {
                                             Participants
                                         </th>
                                         <th className='p-3 text-leetcode-dark-text font-medium text-sm text-center'>
+                                            Timer
+                                        </th>
+                                        <th className='p-3 text-leetcode-dark-text font-medium text-sm text-center'>
                                             Action
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody>
+
                                     {currentContests.length > 0 ? (
                                         currentContests.map((contest, index) => (
                                             <tr
                                                 key={`${contest.id}-${index}`}
                                                 className='border-b border-leetcode-dark-third hover:bg-leetcode-dark-third/30 transition-colors cursor-pointer'
                                             >
-                                                <td className='p-3' onClick={() => navigate(`/contest/${contest.id}`)}>
+                                                <td className='p-3' onClick={() => {
+                                                    if (timers[contest.id]?.expired) {
+                                                        navigate(`/contest/${contest.id}`);
+                                                    }
+                                                }}>
                                                     <span className='text-leetcode-dark-text hover:text-leetcode-dark-text/80 transition-colors'>
                                                         {contest.name}
                                                     </span>
@@ -302,13 +396,16 @@ const ContestList = () => {
                                                     </span>
                                                 </td>
                                                 <td className='p-3 text-center'>
+                                                    <ContestTimer contest={contest} />
+                                                </td>
+                                                <td className='p-3 text-center'>
                                                     {getActionButton(contest)}
                                                 </td>
                                             </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="6" className="p-8 text-center text-leetcode-dark-muted">
+                                            <td colSpan="7" className="p-8 text-center text-leetcode-dark-muted">
                                                 No {activeTab} contests found
                                             </td>
                                         </tr>
