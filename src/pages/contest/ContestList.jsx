@@ -79,7 +79,7 @@ const ContestList = () => {
         }
     }
 
-    // register for contest
+    // register for contest    fix that api
     async function handleRegister(contestId) {
         setLoadingStates(prev => ({ ...prev, [contestId]: true }));
         try {
@@ -115,7 +115,7 @@ const ContestList = () => {
         }
     }
 
-    // unregister from contest
+    // unregister from contest fix that api
     async function handleUnregister(contestId, registrationId) {
         if (!registrationId) {
             toast.error('Registration ID not found');
@@ -273,7 +273,7 @@ const ContestList = () => {
             case 'upcoming':
                 return allContests.filter(contest => contest.status === 'upcoming');
             case 'past':
-                return allContests.filter(contest => contest.status === 'finished');
+                return allContests.filter(contest => contest.status === 'completed');
             case 'running':
                 return allContests.filter(contest => contest.status === 'running');
             default:
