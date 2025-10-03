@@ -1,16 +1,22 @@
-import { Crown, Medal, TrendingUp, Trophy, User } from 'lucide-react'
+import { Crown, Medal, TrendingUp, Trophy, User, ChevronLeft, ChevronRight } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
+import { toast } from 'react-toastify';
 
 const LeaderBoard = () => {
     const [activeTab, setActiveTab] = useState('global');
     const [globalLeaders, setGlobalLeaders] = useState([]);
-    const [start, setStart] = useState(0);
-    const [end, setEnd] = useState(10);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [isLoading, setIsLoading] = useState(false);
+    const itemsPerPage = 10;
 
-    async function fetchGlobalLeaders() {
-        const token = await localStorage.getItem('token');
+    async function fetchGlobalLeaders(page) {
+        setIsLoading(true);
+        const start = (page - 1) * itemsPerPage;
+        const end = page * itemsPerPage;
+
+        const token = localStorage.getItem('token');
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/leaderboard`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/leaderboard?start=${start}&end=${end}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -23,18 +29,36 @@ const LeaderBoard = () => {
             }
 
             const data = await response.json();
-            setGlobalLeaders(data)
-
+            setGlobalLeaders(data);
 
         } catch (error) {
-            console.log('Error fetching  globalLeaders' + err.message);
+            console.log('Error fetching globalLeaders: ' + error.message);
+            // Uncomment if you have toast
             toast.error('Failed to fetch globalLeaders');
+        } finally {
+            setIsLoading(false);
         }
     }
 
     useEffect(() => {
-        fetchGlobalLeaders()
-    }, [])
+        if (activeTab === 'global') {
+            fetchGlobalLeaders(currentPage);
+        }
+    }, [currentPage, activeTab])
+
+    const handlePrevPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const handleNextPage = () => {
+        // Only allow next if we have full page of results
+        if (globalLeaders.length === itemsPerPage) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
 
 
     const contestLeaders = [
@@ -112,28 +136,28 @@ const LeaderBoard = () => {
                                     <div className='overflow-x-auto'>
                                         <table className='w-full'>
                                             <thead>
-                                                <tr className='border-b border-gray-700'>
-                                                    <th className='text-left py-3 px-4 text-gray-400 font-semibold'>Rank</th>
-                                                    <th className='text-left py-3 px-4 text-gray-400 font-semibold'>User</th>
-                                                    <th className='text-left py-3 px-4 text-gray-400 font-semibold'>Rating</th>
-                                                    <th className='text-left py-3 px-4 text-gray-400 font-semibold'>Country</th>
-                                                    <th className='text-left py-3 px-4 text-gray-400 font-semibold'>Solved</th>
-                                                    <th className='text-left py-3 px-4 text-gray-400 font-semibold'>Contests</th>
+                                                <tr className='border-b border-leetcode-dark-third'>
+                                                    <th className='text-left py-1 px-4 text-gray-400 font-semibold'>Rank</th>
+                                                    <th className='text-left py-1 px-4 text-gray-400 font-semibold'>User</th>
+                                                    <th className='text-left py-1 px-4 text-gray-400 font-semibold'>Rating</th>
+                                                    <th className='text-left py-1 px-4 text-gray-400 font-semibold'>Country</th>
+                                                    <th className='text-left py-1 px-4 text-gray-400 font-semibold'>Solved</th>
+                                                    <th className='text-left py-1 px-4 text-gray-400 font-semibold'>Contests</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {globalLeaders.map((leader) => (
                                                     <tr
                                                         key={leader.rank}
-                                                        className='border-b border-gray-700 hover:bg-gray-750 transition-colors'
+                                                        className='border-b border-leetcode-dark-third hover:bg-gray-750 transition-colors'
                                                     >
-                                                        <td className='py-4 px-4'>
+                                                        <td className='py-2 px-4'>
                                                             <div className='flex items-center gap-2'>
                                                                 {getRankIcon(leader.rank)}
                                                                 <span className='text-white font-bold'>{leader.rank}</span>
                                                             </div>
                                                         </td>
-                                                        <td className='py-4 px-4'>
+                                                        <td className='py-2 px-4'>
                                                             <div className='flex items-center gap-2'>
                                                                 <User className='h-4 w-4 text-gray-500' />
                                                                 <span className={`font-semibold ${getRatingColor(leader.rating)}`}>
@@ -141,7 +165,7 @@ const LeaderBoard = () => {
                                                                 </span>
                                                             </div>
                                                         </td>
-                                                        <td className='py-4 px-4'>
+                                                        <td className='py-2 px-4'>
                                                             <div className='flex items-center gap-1'>
                                                                 <TrendingUp className='h-4 w-4 text-green-400' />
                                                                 <span className={`font-bold ${getRatingColor(leader.rating)}`}>
@@ -149,13 +173,13 @@ const LeaderBoard = () => {
                                                                 </span>
                                                             </div>
                                                         </td>
-                                                        <td className='py-4 px-4'>
+                                                        <td className='py-2 px-4'>
                                                             <span className='text-gray-300'>{leader.country}</span>
                                                         </td>
-                                                        <td className='py-4 px-4'>
+                                                        <td className='py-2 px-4'>
                                                             <span className='text-blue-400 font-semibold'>{leader.solved}</span>
                                                         </td>
-                                                        <td className='py-4 px-4'>
+                                                        <td className='py-2 px-4'>
                                                             <span className='text-gray-300'>{leader.contests}</span>
                                                         </td>
                                                     </tr>
@@ -175,12 +199,12 @@ const LeaderBoard = () => {
                                         <table className='w-full'>
                                             <thead>
                                                 <tr className='border-b border-gray-700'>
-                                                    <th className='text-left py-3 px-4 text-gray-400 font-semibold'>Rank</th>
-                                                    <th className='text-left py-3 px-4 text-gray-400 font-semibold'>Participant</th>
-                                                    <th className='text-left py-3 px-4 text-gray-400 font-semibold'>Score</th>
-                                                    <th className='text-left py-3 px-4 text-gray-400 font-semibold'>Solved</th>
-                                                    <th className='text-left py-3 px-4 text-gray-400 font-semibold'>Penalty</th>
-                                                    <th className='text-left py-3 px-4 text-gray-400 font-semibold'>Time</th>
+                                                    <th className='text-left py-1 px-4 text-gray-400 font-semibold'>Rank</th>
+                                                    <th className='text-left py-1 px-4 text-gray-400 font-semibold'>Participant</th>
+                                                    <th className='text-left py-1 px-4 text-gray-400 font-semibold'>Score</th>
+                                                    <th className='text-left py-1 px-4 text-gray-400 font-semibold'>Solved</th>
+                                                    <th className='text-left py-1 px-4 text-gray-400 font-semibold'>Penalty</th>
+                                                    <th className='text-left py-1 px-4 text-gray-400 font-semibold'>Time</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -189,13 +213,13 @@ const LeaderBoard = () => {
                                                         key={leader.rank}
                                                         className='border-b border-gray-700 hover:bg-gray-750 transition-colors'
                                                     >
-                                                        <td className='py-4 px-4'>
+                                                        <td className='py-2 px-4'>
                                                             <div className='flex items-center gap-2'>
                                                                 {getRankIcon(leader.rank)}
                                                                 <span className='text-white font-bold'>{leader.rank}</span>
                                                             </div>
                                                         </td>
-                                                        <td className='py-4 px-4'>
+                                                        <td className='py-2 px-4'>
                                                             <div className='flex items-center gap-2'>
                                                                 <User className='h-4 w-4 text-gray-500' />
                                                                 <span className='text-blue-400 font-semibold hover:text-blue-300 cursor-pointer'>
@@ -203,16 +227,16 @@ const LeaderBoard = () => {
                                                                 </span>
                                                             </div>
                                                         </td>
-                                                        <td className='py-4 px-4'>
+                                                        <td className='py-2 px-4'>
                                                             <span className='text-green-400 font-bold'>{leader.score}</span>
                                                         </td>
-                                                        <td className='py-4 px-4'>
+                                                        <td className='py-2 px-4'>
                                                             <span className='text-white font-semibold'>{leader.solved}/4</span>
                                                         </td>
-                                                        <td className='py-4 px-4'>
+                                                        <td className='py-2 px-4'>
                                                             <span className='text-red-400'>{leader.penalty}</span>
                                                         </td>
-                                                        <td className='py-4 px-4'>
+                                                        <td className='py-2 px-4'>
                                                             <span className='text-gray-300'>{leader.time}</span>
                                                         </td>
                                                     </tr>
@@ -224,20 +248,40 @@ const LeaderBoard = () => {
                             )}
                         </div>
 
-                        {/* pagination  */}
 
-                        <div className='flex justify-between items-center m-2 '>
-                            <div className='flex items-center'>
-                                {/* icon */}
-                                <p>prev</p>
-                            </div>
-                            <div>
-                                <div className='flex items-center'>
-                                    {/* icon */}
-                                    <p>next</p>
+                        {/* pagination */}
+                        {activeTab === 'global' && (
+                            <div className='flex justify-between items-center mt-6 pt-4 border-t border-gray-700'>
+                                <button
+                                    onClick={handlePrevPage}
+                                    disabled={currentPage === 1 || isLoading}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === 1 || isLoading
+                                        ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                                        : 'bg-gray-700 text-white hover:bg-gray-600'
+                                        }`}
+                                >
+                                    <ChevronLeft className='h-4 w-4' />
+                                    <span>Previous</span>
+                                </button>
+
+                                <div className='flex items-center gap-2'>
+                                    <span className='text-gray-400'>Page</span>
+                                    <span className='text-white font-semibold'>{currentPage}</span>
                                 </div>
+
+                                <button
+                                    onClick={handleNextPage}
+                                    disabled={globalLeaders.length < itemsPerPage || isLoading}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${globalLeaders.length < itemsPerPage || isLoading
+                                        ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                                        : 'bg-gray-700 text-white hover:bg-gray-600'
+                                        }`}
+                                >
+                                    <span>Next</span>
+                                    <ChevronRight className='h-4 w-4' />
+                                </button>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             </div>
