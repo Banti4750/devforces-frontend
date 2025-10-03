@@ -1,19 +1,41 @@
 import { Crown, Medal, TrendingUp, Trophy, User } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 const LeaderBoard = () => {
     const [activeTab, setActiveTab] = useState('global');
+    const [globalLeaders, setGlobalLeaders] = useState([]);
+    const [start, setStart] = useState(0);
+    const [end, setEnd] = useState(10);
 
-    const globalLeaders = [
-        { rank: 1, username: 'tourist', rating: 3889, country: 'BY', maxRank: 'Legendary Grandmaster', solved: 3245, contests: 156 },
-        { rank: 2, username: 'Benq', rating: 3779, country: 'US', maxRank: 'Legendary Grandmaster', solved: 2891, contests: 142 },
-        { rank: 3, username: 'ksun48', rating: 3721, country: 'CA', maxRank: 'Legendary Grandmaster', solved: 2654, contests: 138 },
-        { rank: 4, username: 'Petr', rating: 3695, country: 'RU', maxRank: 'Legendary Grandmaster', solved: 2987, contests: 165 },
-        { rank: 5, username: 'Um_nik', rating: 3684, country: 'RU', maxRank: 'Legendary Grandmaster', solved: 2743, contests: 147 },
-        { rank: 6, username: 'jiangly', rating: 3672, country: 'CN', maxRank: 'Legendary Grandmaster', solved: 3012, contests: 134 },
-        { rank: 7, username: 'Radewoosh', rating: 3658, country: 'PL', maxRank: 'Legendary Grandmaster', solved: 2834, contests: 152 },
-        { rank: 8, username: 'ecnerwala', rating: 3642, country: 'US', maxRank: 'Legendary Grandmaster', solved: 2567, contests: 129 },
-    ];
+    async function fetchGlobalLeaders() {
+        const token = await localStorage.getItem('token');
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/leaderboard`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+            })
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            setGlobalLeaders(data)
+
+
+        } catch (error) {
+            console.log('Error fetching  globalLeaders' + err.message);
+            toast.error('Failed to fetch globalLeaders');
+        }
+    }
+
+    useEffect(() => {
+        fetchGlobalLeaders()
+    }, [])
+
 
     const contestLeaders = [
         { rank: 1, username: 'tourist', score: 8934, solved: 4, penalty: 0, time: '1:23:45' },
@@ -49,7 +71,7 @@ const LeaderBoard = () => {
             <div className='bg-leetcode-dark-background min-h-screen flex justify-center items-start pt-6'>
                 {/* Main container */}
                 <div className='w-3/4'>
-                    <div className='px-4 py-6'>
+                    <div className='px-4'>
                         <div className='flex items-center gap-2'>
                             <Trophy className='h-6 w-6 text-orange-400' />
                             <h1 className='text-leetcode-dark-text text-2xl font-semibold'>Leaderboard</h1>
@@ -200,6 +222,21 @@ const LeaderBoard = () => {
                                     </div>
                                 </div>
                             )}
+                        </div>
+
+                        {/* pagination  */}
+
+                        <div className='flex justify-between items-center m-2 '>
+                            <div className='flex items-center'>
+                                {/* icon */}
+                                <p>prev</p>
+                            </div>
+                            <div>
+                                <div className='flex items-center'>
+                                    {/* icon */}
+                                    <p>next</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
