@@ -33,7 +33,7 @@ const Footer = () => {
                 <div className='flex justify-between items-center h-full px-6'>
                     <div className='flex gap-6 items-center'>
                         <p className='text-sm text-gray-400'>All rights Reserved @Devforces</p>
-                        <a href="https://github.com" className='text-gray-400 hover:text-white transition-colors' aria-label="GitHub">
+                        <a href="https://github.com/Banti4750" className='text-gray-400 hover:text-white transition-colors' aria-label="GitHub">
                             <Github size={20} />
                         </a>
                         <a href="https://twitter.com" className='text-gray-400 hover:text-white transition-colors' aria-label="Twitter">

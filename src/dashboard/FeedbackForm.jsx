@@ -1,14 +1,40 @@
 import React, { useState } from 'react'
 import { Github, Twitter, MessageSquare, HelpCircle, FileQuestion, X, Send, Star } from 'lucide-react'
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const FeedbackForm = ({ onClose }) => {
     const [feedback, setFeedback] = useState('');
     const [rating, setRating] = useState(0);
 
-    const handleSubmit = () => {
-        console.log({ feedback, rating });
-        onClose();
-    }
+    const handleSubmit = async () => {
+        const token = localStorage.getItem("token");
+
+        try {
+            const response = await axios.post(
+                `${import.meta.env.VITE_API_URL}/api/feedback`,
+                { feedback, rating },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            if (response.data.success === true) {
+                toast.success("Thanks for your feedback !!");
+                onClose();
+            } else {
+                toast.error("Error while submitting feedback!");
+                onClose();
+            }
+        } catch (error) {
+            console.error("Feedback submission error:", error);
+            toast.error("Something went wrong while sending feedback!");
+        }
+    };
+
 
     return (
         <div className="space-y-4">
@@ -35,14 +61,14 @@ const FeedbackForm = ({ onClose }) => {
                 <textarea
                     value={feedback}
                     onChange={(e) => setFeedback(e.target.value)}
-                    className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600 focus:border-blue-500 focus:outline-none resize-none"
+                    className="w-full bg-leetcode-dark-third text-white rounded-lg p-3 border border-leetcode-dark-sidebar focus:border-leetcode-dark-text focus:outline-none resize-none"
                     rows="4"
                     placeholder="Share your feedback..."
                 />
             </div>
             <button
                 onClick={handleSubmit}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                className="w-full bg-leetcode-dark-background  text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
             >
                 <Send size={18} />
                 Submit Feedback
