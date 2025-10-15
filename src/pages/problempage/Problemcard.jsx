@@ -13,7 +13,7 @@ const ProblemCard = ({ id }) => {
             try {
                 const response = await fetch(`${import.meta.env.VITE_API_URL}/api/problems/${id}`, {
                     headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}` // Adjust token retrieval as needed
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
                 });
 
