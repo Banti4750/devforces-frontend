@@ -275,7 +275,7 @@ const ContestList = () => {
             case 'past':
                 return allContests.filter(contest => contest.status === 'completed');
             case 'running':
-                return allContests.filter(contest => contest.status === 'running');
+                return allContests.filter(contest => contest.status === 'live');
             default:
                 return [];
         }
@@ -362,7 +362,7 @@ const ContestList = () => {
                                                 className='border-b border-leetcode-dark-third hover:bg-leetcode-dark-third/30 transition-colors cursor-pointer'
                                             >
                                                 <td className='p-3' onClick={() => {
-                                                    if (timers[contest.id]?.expired) {
+                                                    if (contest.status === 'live') {
                                                         navigate(`/contest/${contest.id}`);
                                                     }
                                                 }}>
