@@ -1,4 +1,3 @@
-import React from 'react'
 import { useAuth } from '../provider/AuthProvider'
 import { toast } from 'react-toastify';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -69,6 +68,7 @@ const Header = () => {
                             </span>
                             <button
                                 className='text-leetcode-dark-muted hover:text-leetcode-dark-text transition-colors duration-200 px-2 py-1 rounded hover:bg-stone-700'
+                                onClick={() => navigate('/profile')}
                             >
                                 {user.name || "User"}
                             </button>

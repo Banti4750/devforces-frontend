@@ -9,6 +9,7 @@ import ContestList from './pages/contest/ContestList';
 import ContestPageByID from './pages/contestpage/ContestPageByID';
 import LeaderBoard from './pages/leaderboard/LeaderBoard';
 import Footer from './dashboard/Footer';
+import ProfilePage from './pages/profilepage/ProfilePage';
 
 function App() {
   const location = useLocation();
@@ -37,6 +38,7 @@ function App() {
         <Route path="/contest/:id" element={<ContestPageByID />} />
         <Route path='/contest' element={<ContestList />} />
         <Route path='/leaderboard' element={<LeaderBoard />} />
+        <Route path='/profile' element={<ProfilePage />} />
       </Routes>
       {showFooter && <Footer />}
       <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar={false}
