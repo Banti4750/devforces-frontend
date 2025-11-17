@@ -1,5 +1,25 @@
 import React from 'react';
 import { MessageSquare, Mail, Star, Users } from 'lucide-react';
+import CalendarHeatmap from 'react-calendar-heatmap';
+import 'react-calendar-heatmap/dist/styles.css';
+import { Tooltip } from "react-tooltip";
+
+const activityData = (() => {
+    // Generate data for 365 days like LeetCode
+    const end = new Date();
+    const start = new Date();
+    start.setFullYear(start.getFullYear() - 1);
+
+    const days = [];
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+        days.push({
+            date: d.toISOString().split("T")[0],
+            count: Math.floor(Math.random() * 6), // random 0–5 activity like LeetCode
+        });
+    }
+
+    return days;
+})();
 
 const ProfilePage = () => {
     const userData = {
@@ -130,7 +150,7 @@ const ProfilePage = () => {
                     </div>
 
                     {/* Right Column - Profile Picture */}
-                    <div className="lg:col-span-1">
+                    <div className="lg:col-span-1 ">
                         <div className="bg-leetcode-dark-sidebar border border-stone-600 rounded shadow-sm p-6">
                             <div className="flex items-center justify-center h-64 bg-gradient-to-br from-gray-700 to-gray-900 rounded">
                                 {userData.user.profilePic ? (
@@ -148,6 +168,48 @@ const ProfilePage = () => {
                         </div>
                     </div>
                 </div>
+
+                <div className="p-2 mt-4 bg-leetcode-dark-sidebar rounded-2xl border border-stone-600">
+                    <CalendarHeatmap
+                        startDate={new Date(new Date().setFullYear(new Date().getFullYear() - 1))}
+                        endDate={new Date()}
+                        values={activityData}
+                        classForValue={(value) => {
+                            if (!value) return "color-empty";
+                            return `color-scale-${value.count}`;
+                        }}
+                        tooltipDataAttrs={(value) => ({
+                            "data-tip": `${value.date} - ${value.count} submissions`,
+                        })}
+                        showWeekdayLabels={true}
+                    />
+
+                    <Tooltip />
+                    <style>{`
+        .color-empty {
+          fill: #2d2d2d;
+        }
+        .color-scale-0 {
+          fill: #2d2d2d;
+        }
+        .color-scale-1 {
+          fill: #0e4429;
+        }
+        .color-scale-2 {
+          fill: #006d32;
+        }
+        .color-scale-3 {
+          fill: #26a641;
+        }
+        .color-scale-4 {
+          fill: #39d353;
+        }
+        .color-scale-5 {
+          fill: #7ee787;
+        }
+      `}</style>
+                </div>
+
             </div>
         </div>
     );
