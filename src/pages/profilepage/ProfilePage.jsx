@@ -4,22 +4,6 @@ import CalendarHeatmap from 'react-calendar-heatmap';
 import 'react-calendar-heatmap/dist/styles.css';
 import { Tooltip } from "react-tooltip";
 
-const activityData = (() => {
-    const end = new Date();
-    const start = new Date();
-    start.setFullYear(start.getFullYear() - 1);
-
-    const days = [];
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-        days.push({
-            date: d.toISOString().split("T")[0],
-            count: Math.floor(Math.random() * 6),
-        });
-    }
-
-    return days;
-})();
-
 const ProfilePage = () => {
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -32,6 +16,10 @@ const ProfilePage = () => {
         organization: ''
     });
     const [updating, setUpdating] = useState(false);
+    const [activityData, setActivityData] = useState([]);
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [activityLoading, setActivityLoading] = useState(false);
+    const [allSubmisson, setAllSubmission] = useState(0)
 
     async function fetchUserData() {
         try {
@@ -57,9 +45,41 @@ const ProfilePage = () => {
         }
     }
 
+    async function fetchActivityData(year) {
+        try {
+            setActivityLoading(true);
+            const response = await fetch(
+                `${import.meta.env.VITE_API_URL}/api/submission?year=${year}`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch activity data');
+            }
+
+            const data = await response.json();
+            // Backend should return array of objects: [{ date: "2024-01-15", count: 5 }, ...]
+            setActivityData(data.activityData || []);
+            setAllSubmission(data.totalSubmiisons)
+        } catch (err) {
+            console.error('Error fetching activity:', err);
+            setActivityData([]);
+        } finally {
+            setActivityLoading(false);
+        }
+    }
+
     useEffect(() => {
         fetchUserData();
     }, []);
+
+    useEffect(() => {
+        fetchActivityData(selectedYear);
+    }, [selectedYear]);
 
     useEffect(() => {
         if (userData && userData.user) {
@@ -156,24 +176,25 @@ const ProfilePage = () => {
         );
     }
 
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-leetcode-dark-background flex items-center justify-center">
-                <div className="text-gray-400">Loading profile...</div>
-            </div>
-        );
-    }
-
-    if (error || !userData || !userData.user) {
-        return (
-            <div className="min-h-screen bg-leetcode-dark-background flex items-center justify-center">
-                <div className="text-red-400">{error || 'No profile data available'}</div>
-            </div>
-        );
-    }
-
     const user = userData.user;
     const username = user.name || user.email?.split('@')[0] || 'User';
+
+    // Generate year options (from registration year to current year)
+    const currentYear = new Date().getFullYear();
+    const registrationYear = userData.joinedAt ? new Date(userData.joinedAt).getFullYear() : currentYear - 3;
+    const yearOptions = [];
+    for (let year = currentYear; year >= registrationYear; year--) {
+        yearOptions.push(year);
+    }
+
+    // If no years, at least show current year
+    if (yearOptions.length === 0) {
+        yearOptions.push(currentYear);
+    }
+
+    const handleYearChange = (year) => {
+        setSelectedYear(year);
+    };
 
     return (
         <div className="min-h-screen bg-leetcode-dark-background">
@@ -298,43 +319,68 @@ const ProfilePage = () => {
                 </div>
 
                 {/* Activity Calendar */}
-                <div className="p-2 mt-4 bg-leetcode-dark-sidebar rounded-2xl border border-stone-600">
+                <div className="p-4 mt-4 bg-leetcode-dark-sidebar rounded-2xl border border-stone-600">
+                    <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
+                        <div className="text-gray-400 text-sm">
+                            {activityLoading ? 'Loading activity...' : `${allSubmisson} submissions in ${selectedYear}`}
+                        </div>
+                        <div className="flex gap-2 flex-wrap">
+                            {yearOptions.map((year) => (
+                                <button
+                                    key={year}
+                                    onClick={() => handleYearChange(year)}
+                                    className={`py-2 px-4 rounded-xl text-sm font-medium transition-colors ${selectedYear === year
+                                        ? 'bg-leetcode-dark-third text-white'
+                                        : 'bg-leetcode-dark-background text-gray-300 hover:bg-leetcode-dark-third hover:text-white'
+                                        }`}
+                                >
+                                    {year}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                     <CalendarHeatmap
-                        startDate={new Date(new Date().setFullYear(new Date().getFullYear() - 1))}
-                        endDate={new Date()}
+                        startDate={new Date(selectedYear, 0, 1)}
+                        endDate={new Date(selectedYear, 11, 31)}
                         values={activityData}
                         classForValue={(value) => {
                             if (!value) return "color-empty";
-                            return `color-scale-${value.count}`;
+                            return `color-scale-${Math.min(value.count, 5)}`;
                         }}
-                        tooltipDataAttrs={(value) => ({
-                            "data-tip": `${value.date} - ${value.count} submissions`,
-                        })}
+                        tooltipDataAttrs={(value) => {
+                            if (!value || !value.date) {
+                                return { "data-tooltip-id": "activity-tooltip", "data-tooltip-content": "No submissions" };
+                            }
+                            return {
+                                "data-tooltip-id": "activity-tooltip",
+                                "data-tooltip-content": `${value.date}: ${value.count} submission${value.count !== 1 ? 's' : ''}`
+                            };
+                        }}
                         showWeekdayLabels={true}
                     />
 
-                    <Tooltip />
+                    <Tooltip id="activity-tooltip" />
                     <style>{`
                         .color-empty {
-                            fill: #2d2d2d;
+                            fill: #1a1a1a;
                         }
                         .color-scale-0 {
                             fill: #2d2d2d;
                         }
                         .color-scale-1 {
-                            fill: #0e4429;
-                        }
-                        .color-scale-2 {
-                            fill: #006d32;
-                        }
-                        .color-scale-3 {
-                            fill: #26a641;
-                        }
-                        .color-scale-4 {
                             fill: #39d353;
                         }
+                        .color-scale-2 {
+                            fill: #26a641;
+                        }
+                        .color-scale-3 {
+                            fill: #006d32;
+                        }
+                        .color-scale-4 {
+                            fill: #0e4429;
+                        }
                         .color-scale-5 {
-                            fill: #7ee787;
+                            fill: #0e4429;
                         }
                     `}</style>
                 </div>
@@ -355,7 +401,7 @@ const ProfilePage = () => {
                             </div>
 
                             {/* Modal Form */}
-                            <form onSubmit={handleUpdateProfile} className="p-4 space-y-4">
+                            <div className="p-4 space-y-4">
                                 {/* Name */}
                                 <div>
                                     <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
@@ -442,14 +488,15 @@ const ProfilePage = () => {
                                         Cancel
                                     </button>
                                     <button
-                                        type="submit"
+                                        type="button"
+                                        onClick={handleUpdateProfile}
                                         disabled={updating}
                                         className="flex-1 px-4 py-2 bg-leetcode-dark-background  text-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         {updating ? 'Updating...' : 'Save Changes'}
                                     </button>
                                 </div>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 )}
