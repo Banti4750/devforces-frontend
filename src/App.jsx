@@ -10,6 +10,8 @@ import ContestPageByID from './pages/contestpage/ContestPageByID';
 import LeaderBoard from './pages/leaderboard/LeaderBoard';
 import Footer from './dashboard/Footer';
 import ProfilePage from './pages/profilepage/ProfilePage';
+import TutorialPage from './pages/tutorials/TutorialPage';
+import TutorialPageById from './pages/tutorials/TutorialPageById';
 
 function App() {
   const location = useLocation();
@@ -25,8 +27,8 @@ function App() {
   const showFooter =
     showFooterPaths.some((p) => path.startsWith(p)) ||
     path.startsWith("/problem/") ||
-    path.startsWith("/contest/");
-
+    path.startsWith("/contest/") ||
+    path.startsWith("/tutorial/")
   return (
     <>
       <Header />
@@ -39,6 +41,8 @@ function App() {
         <Route path='/contest' element={<ContestList />} />
         <Route path='/leaderboard' element={<LeaderBoard />} />
         <Route path='/profile' element={<ProfilePage />} />
+        <Route path='/tutorial' element={<TutorialPage />} />
+        <Route path="/tutorial/:id" element={<TutorialPageById />} />
       </Routes>
       {showFooter && <Footer />}
       <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar={false}
