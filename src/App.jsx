@@ -28,7 +28,8 @@ function App() {
     showFooterPaths.some((p) => path.startsWith(p)) ||
     path.startsWith("/problem/") ||
     path.startsWith("/contest/") ||
-    path.startsWith("/tutorial/")
+    path.startsWith("/tutorial/") ||
+    path.startsWith("/tutorial")
   return (
     <>
       <Header />

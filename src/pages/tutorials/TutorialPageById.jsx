@@ -132,22 +132,28 @@ const TutorialPageById = () => {
     const renderCodeBlocks = (content) => {
         if (!content) return null;
 
+        // First, unescape the HTML content
+        const unescapedContent = content
+            .replace(/\\"/g, '"')
+            .replace(/\\n/g, '\n')
+            .replace(/\\\\/g, '\\');
+
         const elements = [];
         let currentIndex = 0;
 
-        // Regular expression to find code blocks
-        const codeBlockRegex = /<pre><code(?:\s+class="language-([^"]*)")?>([\s\S]*?)<\/code><\/pre>/g;
+        // Regular expression to find code blocks with optional class attribute
+        const codeBlockRegex = /<pre><code(?:\s+class=["']language-([^"']*)["'])?>([\s\S]*?)<\/code><\/pre>/g;
         let match;
         let lastIndex = 0;
 
-        while ((match = codeBlockRegex.exec(content)) !== null) {
+        while ((match = codeBlockRegex.exec(unescapedContent)) !== null) {
             // Add content before the code block
             if (match.index > lastIndex) {
                 elements.push(
                     <div
                         key={`text-${currentIndex}`}
                         dangerouslySetInnerHTML={{
-                            __html: content.slice(lastIndex, match.index)
+                            __html: unescapedContent.slice(lastIndex, match.index)
                         }}
                     />
                 );
@@ -161,7 +167,10 @@ const TutorialPageById = () => {
                 .replace(/&gt;/g, '>')
                 .replace(/&amp;/g, '&')
                 .replace(/&quot;/g, '"')
-                .replace(/&#39;/g, "'");
+                .replace(/&#39;/g, "'")
+                .replace(/&#x27;/g, "'")
+                .replace(/&#x2F;/g, '/')
+                .trim();
 
             elements.push(
                 <div key={`code-${currentIndex}`} className="mb-6">
@@ -200,19 +209,19 @@ const TutorialPageById = () => {
         }
 
         // Add remaining content after the last code block
-        if (lastIndex < content.length) {
+        if (lastIndex < unescapedContent.length) {
             elements.push(
                 <div
                     key={`text-${currentIndex}`}
                     dangerouslySetInnerHTML={{
-                        __html: content.slice(lastIndex)
+                        __html: unescapedContent.slice(lastIndex)
                     }}
                 />
             );
         }
 
         return elements.length > 0 ? elements : (
-            <div dangerouslySetInnerHTML={{ __html: content }} />
+            <div dangerouslySetInnerHTML={{ __html: unescapedContent }} />
         );
     };
 
@@ -276,7 +285,7 @@ const TutorialPageById = () => {
                 {/* Back button and header */}
                 <div className='flex items-center justify-between mb-6'>
                     <button
-                        onClick={() => navigate('/tutorials')}
+                        onClick={() => navigate('/tutorial')}
                         className="flex items-center gap-2 text-leetcode-dark-text hover:text-leetcode-dark-text/80 transition-colors px-4 py-2 rounded-lg border border-leetcode-dark-third hover:border-leetcode-dark-text/50"
                     >
                         <ArrowLeft className="h-4 w-4" />
