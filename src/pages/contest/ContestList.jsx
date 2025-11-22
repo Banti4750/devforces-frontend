@@ -1,4 +1,4 @@
-import { Trophy, Calendar, Clock } from 'lucide-react'
+import { Trophy, Calendar, Clock, Users, Award } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -8,9 +8,8 @@ const ContestList = () => {
     const [activeTab, setActiveTab] = useState('upcoming');
     const [allContests, setAllContest] = useState([]);
     const [loadingStates, setLoadingStates] = useState({});
-    const [timers, setTimers] = useState({}); // Store timer values for each contest
+    const [timers, setTimers] = useState({});
     const navigate = useNavigate()
-
 
     // Calculate time remaining until contest start
     const calculateTimeRemaining = (startTime) => {
@@ -48,7 +47,7 @@ const ContestList = () => {
             setTimers(newTimers);
         };
 
-        updateTimers(); // Initial calculation
+        updateTimers();
         const interval = setInterval(updateTimers, 1000);
 
         return () => clearInterval(interval);
@@ -79,7 +78,7 @@ const ContestList = () => {
         }
     }
 
-    // register for contest    fix that api
+    // register for contest
     async function handleRegister(contestId) {
         setLoadingStates(prev => ({ ...prev, [contestId]: true }));
         try {
@@ -100,7 +99,6 @@ const ContestList = () => {
             const data = await response.json();
 
             if (data.success) {
-                // Refresh contest to get updated data
                 fetchContests();
                 toast.success('Successfully registered for contest!');
             } else {
@@ -115,7 +113,7 @@ const ContestList = () => {
         }
     }
 
-    // unregister from contest fix that api
+    // unregister from contest
     async function handleUnregister(contestId, registrationId) {
         if (!registrationId) {
             toast.error('Registration ID not found');
@@ -141,7 +139,6 @@ const ContestList = () => {
             const data = await response.json();
 
             if (data.success) {
-                // Refresh registrations to get updated data
                 fetchContests();
                 toast.success('Successfully unregistered from contest!');
             } else {
@@ -167,7 +164,7 @@ const ContestList = () => {
                 <button
                     onClick={() => handleRegister(contest.id)}
                     disabled={isLoading}
-                    className="px-2 py-1 bg-green-600/20 text-green-400 text-xs rounded-md border border-green-600/30 hover:bg-green-600/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-1 bg-green-600/20 text-green-400 text-xs rounded-md border border-green-600/30 hover:bg-green-600/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                 >
                     {isLoading ? "Loading..." : "Register"}
                 </button>
@@ -176,7 +173,7 @@ const ContestList = () => {
 
         if (contest.status === "running") {
             return (
-                <span className="px-2 py-1 bg-orange-600/20 text-orange-400 text-xs rounded-md border border-orange-600/30">
+                <span className="px-3 py-1 bg-orange-600/20 text-orange-400 text-xs rounded-md border border-orange-600/30 font-medium">
                     Running
                 </span>
             );
@@ -184,15 +181,14 @@ const ContestList = () => {
 
         if (contest.status === "finished") {
             return (
-                <span className="px-2 py-1 bg-blue-600/20 text-blue-400 text-xs rounded-md border border-blue-600/30">
+                <span className="px-3 py-1 bg-blue-600/20 text-blue-400 text-xs rounded-md border border-blue-600/30 font-medium">
                     Results
                 </span>
             );
         }
 
-        // fallback for unexpected status
         return (
-            <span className="px-2 py-1 bg-gray-600/20 text-gray-400 text-xs rounded-md border border-gray-600/30">
+            <span className="px-3 py-1 bg-gray-600/20 text-gray-400 text-xs rounded-md border border-gray-600/30 font-medium">
                 Unknown
             </span>
         );
@@ -202,43 +198,38 @@ const ContestList = () => {
         const isRegistered = contest.isRegistered;
         const isLoading = loadingStates[contest.id];
 
-        // Not registered → show status badge
         if (!isRegistered) {
             return getStatusBadge(contest);
         }
 
-        // Registered & upcoming → allow unregister
         if (contest.status === "upcoming") {
             return (
                 <button
                     onClick={() => handleUnregister(contest.id, contest.registrationId)}
                     disabled={isLoading}
-                    className="px-3 py-1 bg-red-600/20 text-red-400 text-xs rounded-md border border-red-600/30 hover:bg-red-600/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-1 bg-red-600/20 text-red-400 text-xs rounded-md border border-red-600/30 hover:bg-red-600/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                 >
                     {isLoading ? "Loading..." : "Unregister"}
                 </button>
             );
         }
 
-        // Registered & running → View Contest
         if (contest.status === "running") {
             return (
-                <button className="px-3 py-1 bg-green-600/20 text-green-400 text-xs rounded-md border border-green-600/30 hover:bg-green-600/30 transition-colors">
+                <button className="px-3 py-1 bg-green-600/20 text-green-400 text-xs rounded-md border border-green-600/30 hover:bg-green-600/30 transition-colors font-medium">
                     View Contest
                 </button>
             );
         }
 
-        // Registered & finished → View Results
         if (contest.status === "finished") {
             return (
-                <span className="px-3 py-1 bg-blue-600/20 text-blue-400 text-xs rounded-md border border-blue-600/30">
+                <span className="px-3 py-1 bg-blue-600/20 text-blue-400 text-xs rounded-md border border-blue-600/30 font-medium">
                     View Results
                 </span>
             );
         }
 
-        // fallback
         return getStatusBadge(contest);
     };
 
@@ -252,7 +243,7 @@ const ContestList = () => {
 
         if (timer.expired) {
             return (
-                <span className="text-red-400 text-xs flex items-center gap-1 justify-center">
+                <span className="text-red-400 text-xs flex items-center gap-1 justify-center font-medium">
                     <Clock className="h-3 w-3" />
                     {timer.display}
                 </span>
@@ -260,14 +251,13 @@ const ContestList = () => {
         }
 
         return (
-            <span className="text-blue-400 text-xs flex items-center gap-1 justify-center">
+            <span className="text-blue-400 text-xs flex items-center gap-1 justify-center font-medium">
                 <Clock className="h-3 w-3" />
                 {timer.display}
             </span>
         );
     };
 
-    // Fixed filtering logic to handle all three tabs
     const getFilteredContests = () => {
         switch (activeTab) {
             case 'upcoming':
@@ -284,168 +274,204 @@ const ContestList = () => {
     const currentContests = getFilteredContests();
 
     return (
-        <>
-            <div className='bg-leetcode-dark-background min-h-screen'>
-                {/* Main container */}
-                <div className='container mx-auto px-4 py-6 max-w-3/4'>
-                    <div className='flex items-center gap-2'>
-                        <Trophy className='h-6 w-6 text-orange-400' />
-                        <h1 className='text-leetcode-dark-text text-2xl font-semibold'>Contest</h1>
+        <div className='bg-leetcode-dark-background min-h-screen'>
+            {/* Main container */}
+            <div className='container mx-auto px-4 py-6 max-w-6xl'>
+                <div className='flex items-center gap-2 mb-2'>
+                    <Trophy className='h-7 w-7 text-orange-400' />
+                    <h1 className='text-leetcode-dark-text text-3xl font-bold'>Contests</h1>
+                </div>
+                <p className='text-leetcode-dark-muted mb-6 text-lg'>
+                    Compete in coding challenges and climb the leaderboard
+                </p>
+
+                <div className='bg-leetcode-dark-sidebar rounded-lg p-6 border border-leetcode-dark-third mb-6'>
+                    {/* Navigation tabs */}
+                    <div className='border border-leetcode-dark-third rounded-xl inline-flex mb-6'>
+                        <button
+                            onClick={() => setActiveTab('upcoming')}
+                            className={`px-6 py-3 m-1 w-32 rounded-lg border border-leetcode-dark-third font-medium transition-colors ${activeTab === 'upcoming'
+                                    ? 'bg-leetcode-dark-background text-leetcode-dark-text shadow-lg'
+                                    : 'bg-leetcode-dark-sidebar text-leetcode-dark-text hover:bg-leetcode-dark-background/50'
+                                }`}
+                        >
+                            Upcoming
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('running')}
+                            className={`px-6 py-3 m-1 w-32 rounded-lg border border-leetcode-dark-third font-medium transition-colors ${activeTab === 'running'
+                                    ? 'bg-leetcode-dark-background text-leetcode-dark-text shadow-lg'
+                                    : 'bg-leetcode-dark-sidebar text-leetcode-dark-text hover:bg-leetcode-dark-background/50'
+                                }`}
+                        >
+                            Running
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('past')}
+                            className={`px-6 py-3 m-1 w-32 rounded-lg border border-leetcode-dark-third font-medium transition-colors ${activeTab === 'past'
+                                    ? 'bg-leetcode-dark-background text-leetcode-dark-text shadow-lg'
+                                    : 'bg-leetcode-dark-sidebar text-leetcode-dark-text hover:bg-leetcode-dark-background/50'
+                                }`}
+                        >
+                            Past
+                        </button>
                     </div>
 
-                    <div className='bg-leetcode-dark-sidebar rounded-lg p-6 h-full mt-4'>
-                        {/* navigation of past and latest */}
-                        <div className='border border-leetcode-dark-third rounded-xl'>
-                            <button
-                                onClick={() => setActiveTab('upcoming')}
-                                className={`px-4 py-2 m-1 w-24 rounded-lg border border-leetcode-dark-third font-medium transition-colors ${activeTab === 'upcoming'
-                                    ? ' bg-leetcode-dark-background text-leetcode-dark-text'
-                                    : 'bg-leetcode-dark-sidebar text-leetcode-dark-text '
-                                    }`}
-                            >
-                                Upcoming
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('past')}
-                                className={`px-4 py-2 w-24 m-1 rounded-lg border border-leetcode-dark-third font-medium transition-colors ${activeTab === 'past'
-                                    ? ' bg-leetcode-dark-background text-leetcode-dark-text'
-                                    : 'bg-leetcode-dark-sidebar text-leetcode-dark-text '
-                                    }`}
-                            >
-                                Past
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('running')}
-                                className={`px-4 py-2 w-24 m-1 rounded-lg border border-leetcode-dark-third font-medium transition-colors ${activeTab === 'running'
-                                    ? ' bg-leetcode-dark-background text-leetcode-dark-text'
-                                    : 'bg-leetcode-dark-sidebar text-leetcode-dark-text '
-                                    }`}
-                            >
-                                Running
-                            </button>
-                        </div>
-
-                        {/* contest table */}
-                        <div className='mt-4 overflow-x-auto'>
-                            <table className='w-full border-collapse'>
-                                <thead>
-                                    <tr className='bg-leetcode-dark-third border border-leetcode-dark-third rounded-xl'>
-                                        <th className='p-3 text-leetcode-dark-text font-medium text-sm text-center'>
-                                            Name
-                                        </th>
-                                        <th className='p-3 text-leetcode-dark-text font-medium text-sm text-center'>
-                                            Writers
-                                        </th>
-                                        <th className='p-3 text-leetcode-dark-text font-medium text-sm text-center'>
-                                            Start
-                                        </th>
-                                        <th className='p-3 text-leetcode-dark-text font-medium text-sm text-center'>
-                                            Length
-                                        </th>
-                                        <th className='p-3 text-leetcode-dark-text font-medium text-sm text-center'>
-                                            Participants
-                                        </th>
-                                        <th className='p-3 text-leetcode-dark-text font-medium text-sm text-center'>
-                                            Timer
-                                        </th>
-                                        <th className='p-3 text-leetcode-dark-text font-medium text-sm text-center'>
-                                            Action
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-
-                                    {currentContests.length > 0 ? (
-                                        currentContests.map((contest, index) => (
-                                            <tr
-                                                key={`${contest.id}-${index}`}
-                                                className='border-b border-leetcode-dark-third hover:bg-leetcode-dark-third/30 transition-colors cursor-pointer'
-                                            >
-                                                <td className='p-3' onClick={() => {
-                                                    if (contest.status === 'live') {
-                                                        navigate(`/contest/${contest.id}`);
-                                                    }
-                                                }}>
-                                                    <span className='text-leetcode-dark-text hover:text-leetcode-dark-text/80 transition-colors'>
-                                                        {contest.name}
-                                                    </span>
-                                                </td>
-                                                <td className='p-3 text-center'>
-                                                    <div className='flex flex-wrap gap-1 justify-center'>
-                                                        {contest.writers?.split(', ').map((writer, idx) => (
-                                                            <span
-                                                                key={idx}
-                                                                className='text-blue-400 hover:text-blue-300 cursor-pointer text-sm'
-                                                            >
-                                                                {writer}{idx < contest.writers.split(', ').length - 1 ? ',' : ''}
-                                                            </span>
-                                                        )) || 'N/A'}
-                                                    </div>
-                                                </td>
-                                                <td className='p-3 text-center text-leetcode-dark-muted text-sm'>
-                                                    {contest.start || 'N/A'}
-                                                </td>
-                                                <td className='p-3 text-center'>
+                    {/* Contest table */}
+                    <div className='overflow-x-auto'>
+                        <table className='w-full'>
+                            <thead>
+                                <tr className='border-b border-leetcode-dark-third'>
+                                    <th className='py-3 px-4 text-leetcode-dark-muted font-semibold text-left text-sm'>
+                                        Name
+                                    </th>
+                                    <th className='py-3 px-4 text-leetcode-dark-muted font-semibold text-left text-sm'>
+                                        Writers
+                                    </th>
+                                    <th className='py-3 px-4 text-leetcode-dark-muted font-semibold text-center text-sm'>
+                                        Start
+                                    </th>
+                                    <th className='py-3 px-4 text-leetcode-dark-muted font-semibold text-center text-sm'>
+                                        Length
+                                    </th>
+                                    <th className='py-3 px-4 text-leetcode-dark-muted font-semibold text-center text-sm'>
+                                        Participants
+                                    </th>
+                                    <th className='py-3 px-4 text-leetcode-dark-muted font-semibold text-center text-sm'>
+                                        Timer
+                                    </th>
+                                    <th className='py-3 px-4 text-leetcode-dark-muted font-semibold text-center text-sm'>
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {currentContests.length > 0 ? (
+                                    currentContests.map((contest, index) => (
+                                        <tr
+                                            key={`${contest.id}-${index}`}
+                                            className='border-b border-leetcode-dark-third hover:bg-leetcode-dark-background/50 transition-colors'
+                                        >
+                                            <td className='py-3 px-4'>
+                                                <span
+                                                    className='text-leetcode-dark-text hover:text-blue-400 transition-colors cursor-pointer font-medium'
+                                                    onClick={() => {
+                                                        if (contest.status === 'live') {
+                                                            navigate(`/contest/${contest.id}`);
+                                                        }
+                                                    }}
+                                                >
+                                                    {contest.name}
+                                                </span>
+                                            </td>
+                                            <td className='py-3 px-4'>
+                                                <div className='flex flex-wrap gap-1'>
+                                                    {contest.writers?.split(', ').map((writer, idx) => (
+                                                        <span
+                                                            key={idx}
+                                                            className='text-blue-400 hover:text-blue-300 cursor-pointer text-sm'
+                                                        >
+                                                            {writer}{idx < contest.writers.split(', ').length - 1 ? ',' : ''}
+                                                        </span>
+                                                    )) || <span className='text-leetcode-dark-muted text-sm'>N/A</span>}
+                                                </div>
+                                            </td>
+                                            <td className='py-3 px-4 text-center text-leetcode-dark-text text-sm'>
+                                                {contest.start || 'N/A'}
+                                            </td>
+                                            <td className='py-3 px-4 text-center'>
+                                                <span className='text-leetcode-dark-text text-sm font-medium'>
+                                                    {contest.length || 'N/A'}
+                                                </span>
+                                            </td>
+                                            <td className='py-3 px-4 text-center'>
+                                                <div className='flex items-center justify-center gap-1'>
+                                                    <Users className='h-3 w-3 text-leetcode-dark-muted' />
                                                     <span className='text-leetcode-dark-text text-sm font-medium'>
-                                                        {contest.length || 'N/A'}
-                                                    </span>
-                                                </td>
-                                                <td className='p-3 text-center'>
-                                                    <span className='text-leetcode-dark-text text-sm'>
                                                         {contest.participants || '0'}
                                                     </span>
-                                                </td>
-                                                <td className='p-3 text-center'>
-                                                    <ContestTimer contest={contest} />
-                                                </td>
-                                                <td className='p-3 text-center'>
-                                                    {getActionButton(contest)}
-                                                </td>
-                                            </tr>
-                                        ))
-                                    ) : (
-                                        <tr>
-                                            <td colSpan="7" className="p-8 text-center text-leetcode-dark-muted">
-                                                No {activeTab} contests found
+                                                </div>
+                                            </td>
+                                            <td className='py-3 px-4 text-center'>
+                                                <ContestTimer contest={contest} />
+                                            </td>
+                                            <td className='py-3 px-4 text-center'>
+                                                {getActionButton(contest)}
                                             </td>
                                         </tr>
-                                    )}
-                                </tbody>
-                            </table>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="7" className="py-8 text-center text-leetcode-dark-muted">
+                                            <Trophy className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                                            <div className="text-lg mb-2">No {activeTab} contests found</div>
+                                            <div className="text-sm">Check back later for new contests</div>
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {/* Info Cards */}
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                    <div className='bg-leetcode-dark-sidebar rounded-lg border border-leetcode-dark-third p-6 hover:border-orange-500/50 transition-colors'>
+                        <div className='flex items-center gap-3 mb-4'>
+                            <div className='p-2 bg-orange-600/20 rounded-lg'>
+                                <Trophy className='h-6 w-6 text-orange-400' />
+                            </div>
+                            <h3 className='text-leetcode-dark-text font-semibold text-lg'>Contest Rules</h3>
                         </div>
+                        <ul className='text-leetcode-dark-text text-sm space-y-2'>
+                            <li className='flex items-center gap-2'>
+                                <div className='w-1.5 h-1.5 bg-orange-400 rounded-full'></div>
+                                Contests are typically 2-3 hours long
+                            </li>
+                            <li className='flex items-center gap-2'>
+                                <div className='w-1.5 h-1.5 bg-orange-400 rounded-full'></div>
+                                Rating changes are applied after system testing
+                            </li>
+                            <li className='flex items-center gap-2'>
+                                <div className='w-1.5 h-1.5 bg-orange-400 rounded-full'></div>
+                                Div. 1 contests are for experienced participants
+                            </li>
+                            <li className='flex items-center gap-2'>
+                                <div className='w-1.5 h-1.5 bg-orange-400 rounded-full'></div>
+                                Educational rounds focus on learning
+                            </li>
+                        </ul>
                     </div>
 
-                    <div className='mt-6 grid grid-cols-1 md:grid-cols-2 gap-6'>
-                        <div className='bg-leetcode-dark-sidebar rounded-lg border border-leetcode-dark-third p-6'>
-                            <h3 className='text-leetcode-dark-text font-semibold mb-3 flex items-center gap-2'>
-                                <Trophy className='h-5 w-5 text-orange-400' />
-                                Contest Rules
-                            </h3>
-                            <ul className='text-leetcode-dark-text text-sm space-y-2'>
-                                <li>• Contests are typically 2-3 hours long</li>
-                                <li>• Rating changes are applied after system testing</li>
-                                <li>• Div. 1 contests are for experienced participants</li>
-                                <li>• Educational rounds focus on learning</li>
-                            </ul>
+                    <div className='bg-leetcode-dark-sidebar rounded-lg border border-leetcode-dark-third p-6 hover:border-blue-500/50 transition-colors'>
+                        <div className='flex items-center gap-3 mb-4'>
+                            <div className='p-2 bg-blue-600/20 rounded-lg'>
+                                <Calendar className='h-6 w-6 text-blue-400' />
+                            </div>
+                            <h3 className='text-leetcode-dark-text font-semibold text-lg'>Contest Schedule</h3>
                         </div>
-
-                        <div className='bg-leetcode-dark-sidebar rounded-lg border border-leetcode-dark-third p-6'>
-                            <h3 className='text-leetcode-dark-text font-semibold mb-3 flex items-center gap-2'>
-                                <Calendar className='h-5 w-5 text-blue-400' />
-                                Contest Schedule
-                            </h3>
-                            <ul className='text-leetcode-dark-text text-sm space-y-2'>
-                                <li>• Regular rounds: 2-3 times per week</li>
-                                <li>• Educational rounds: Weekly</li>
-                                <li>• Global rounds: Monthly</li>
-                                <li>• All contests start at 17:35 MSK</li>
-                            </ul>
-                        </div>
+                        <ul className='text-leetcode-dark-text text-sm space-y-2'>
+                            <li className='flex items-center gap-2'>
+                                <div className='w-1.5 h-1.5 bg-blue-400 rounded-full'></div>
+                                Regular rounds: 2-3 times per week
+                            </li>
+                            <li className='flex items-center gap-2'>
+                                <div className='w-1.5 h-1.5 bg-blue-400 rounded-full'></div>
+                                Educational rounds: Weekly
+                            </li>
+                            <li className='flex items-center gap-2'>
+                                <div className='w-1.5 h-1.5 bg-blue-400 rounded-full'></div>
+                                Global rounds: Monthly
+                            </li>
+                            <li className='flex items-center gap-2'>
+                                <div className='w-1.5 h-1.5 bg-blue-400 rounded-full'></div>
+                                All contests start at 17:35 MSK
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
-
-        </>
+        </div>
     );
 };
 

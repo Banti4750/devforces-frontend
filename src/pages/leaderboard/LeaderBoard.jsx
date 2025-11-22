@@ -33,7 +33,6 @@ const LeaderBoard = () => {
 
         } catch (error) {
             console.log('Error fetching globalLeaders: ' + error.message);
-            // Uncomment if you have toast
             toast.error('Failed to fetch globalLeaders');
         } finally {
             setIsLoading(false);
@@ -53,13 +52,10 @@ const LeaderBoard = () => {
     };
 
     const handleNextPage = () => {
-        // Only allow next if we have full page of results
         if (globalLeaders.length === itemsPerPage) {
             setCurrentPage(currentPage + 1);
         }
     };
-
-
 
     const contestLeaders = [
         { rank: 1, username: 'tourist', score: 8934, solved: 4, penalty: 0, time: '1:23:45' },
@@ -91,81 +87,86 @@ const LeaderBoard = () => {
     };
 
     return (
-        <>
-            <div className='bg-leetcode-dark-background min-h-screen flex justify-center items-start pt-6'>
-                {/* Main container */}
-                <div className='w-3/4'>
-                    <div className='px-4'>
-                        <div className='flex items-center gap-2'>
-                            <Trophy className='h-6 w-6 text-orange-400' />
-                            <h1 className='text-leetcode-dark-text text-2xl font-semibold'>Leaderboard</h1>
-                        </div>
+        <div className='bg-leetcode-dark-background min-h-screen'>
+            {/* Main container */}
+            <div className='container mx-auto px-4 py-6 max-w-6xl'>
+                <div className='flex items-center gap-2 mb-2'>
+                    <Trophy className='h-7 w-7 text-orange-400' />
+                    <h1 className='text-leetcode-dark-text text-3xl font-bold'>Leaderboard</h1>
+                </div>
+                <p className='text-leetcode-dark-muted mb-6 text-lg'>
+                    Compete with developers worldwide and track your progress
+                </p>
+
+                <div className='bg-leetcode-dark-sidebar rounded-lg p-6 h-full border border-leetcode-dark-third'>
+                    {/* Navigation tabs */}
+                    <div className='border border-leetcode-dark-third rounded-xl inline-flex mb-6'>
+                        <button
+                            onClick={() => setActiveTab('global')}
+                            className={`px-6 py-3 m-1 w-40 rounded-lg border border-leetcode-dark-third font-medium transition-colors ${activeTab === 'global'
+                                    ? 'bg-leetcode-dark-background text-leetcode-dark-text shadow-lg'
+                                    : 'bg-leetcode-dark-sidebar text-leetcode-dark-text hover:bg-leetcode-dark-background/50'
+                                }`}
+                        >
+                            Global Rankings
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('contest')}
+                            className={`px-6 py-3 m-1 w-40 rounded-lg border border-leetcode-dark-third font-medium transition-colors ${activeTab === 'contest'
+                                    ? 'bg-leetcode-dark-background text-leetcode-dark-text shadow-lg'
+                                    : 'bg-leetcode-dark-sidebar text-leetcode-dark-text hover:bg-leetcode-dark-background/50'
+                                }`}
+                        >
+                            Latest Contest
+                        </button>
                     </div>
 
-                    <div className='bg-leetcode-dark-sidebar rounded-lg p-6 mt-4'>
-                        {/* navigation buttons */}
-                        <div className='border border-leetcode-dark-third rounded-xl mb-6'>
-                            <button
-                                onClick={() => setActiveTab('global')}
-                                className={`px-4 py-2 m-1 w-50 rounded-lg border border-leetcode-dark-third font-medium transition-colors ${activeTab === 'global'
-                                    ? 'bg-leetcode-dark-background text-leetcode-dark-text'
-                                    : 'bg-leetcode-dark-sidebar text-leetcode-dark-text'
-                                    }`}
-                            >
-                                Global Rankings
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('contest')}
-                                className={`px-4 py-2 m-1 w-50 rounded-lg border border-leetcode-dark-third font-medium transition-colors ${activeTab === 'contest'
-                                    ? 'bg-leetcode-dark-background text-leetcode-dark-text'
-                                    : 'bg-leetcode-dark-sidebar text-leetcode-dark-text'
-                                    }`}
-                            >
-                                Latest Contest
-                            </button>
-                        </div>
+                    <div>
+                        {activeTab === 'global' ? (
+                            <div>
+                                <div className='mb-4 flex items-center justify-between'>
+                                    <h2 className='text-xl font-semibold text-leetcode-dark-text'>Top Competitive Developers</h2>
+                                    <span className='text-sm text-leetcode-dark-muted'>Updated daily</span>
+                                </div>
 
-                        <div>
-                            {activeTab === 'global' ? (
-                                <div>
-                                    <div className='mb-4 flex items-center justify-between'>
-                                        <h2 className='text-xl font-semibold text-white'>Top Competitive Devlopers</h2>
-                                        <span className='text-sm text-gray-400'>Updated daily</span>
+                                {isLoading ? (
+                                    <div className="p-8 text-center text-leetcode-dark-muted">
+                                        <div className="animate-pulse">Loading leaderboard...</div>
                                     </div>
-
+                                ) : (
                                     <div className='overflow-x-auto'>
                                         <table className='w-full'>
                                             <thead>
                                                 <tr className='border-b border-leetcode-dark-third'>
-                                                    <th className='text-left py-1 px-4 text-gray-400 font-semibold'>Rank</th>
-                                                    <th className='text-left py-1 px-4 text-gray-400 font-semibold'>User</th>
-                                                    <th className='text-left py-1 px-4 text-gray-400 font-semibold'>Rating</th>
-                                                    <th className='text-left py-1 px-4 text-gray-400 font-semibold'>Country</th>
-                                                    <th className='text-left py-1 px-4 text-gray-400 font-semibold'>Solved</th>
-                                                    <th className='text-left py-1 px-4 text-gray-400 font-semibold'>Contests</th>
+                                                    <th className='text-left py-3 px-4 text-leetcode-dark-muted font-semibold'>Rank</th>
+                                                    <th className='text-left py-3 px-4 text-leetcode-dark-muted font-semibold'>User</th>
+                                                    <th className='text-left py-3 px-4 text-leetcode-dark-muted font-semibold'>Rating</th>
+                                                    <th className='text-left py-3 px-4 text-leetcode-dark-muted font-semibold'>Country</th>
+                                                    <th className='text-left py-3 px-4 text-leetcode-dark-muted font-semibold'>Solved</th>
+                                                    <th className='text-left py-3 px-4 text-leetcode-dark-muted font-semibold'>Contests</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {globalLeaders.map((leader) => (
                                                     <tr
                                                         key={leader.rank}
-                                                        className='border-b border-leetcode-dark-third hover:bg-gray-750 transition-colors'
+                                                        className='border-b border-leetcode-dark-third hover:bg-leetcode-dark-background/50 transition-colors'
                                                     >
-                                                        <td className='py-2 px-4'>
+                                                        <td className='py-3 px-4'>
                                                             <div className='flex items-center gap-2'>
                                                                 {getRankIcon(leader.rank)}
-                                                                <span className='text-white font-bold'>{leader.rank}</span>
+                                                                <span className='text-leetcode-dark-text font-bold'>{leader.rank}</span>
                                                             </div>
                                                         </td>
-                                                        <td className='py-2 px-4'>
+                                                        <td className='py-3 px-4'>
                                                             <div className='flex items-center gap-2'>
-                                                                <User className='h-4 w-4 text-gray-500' />
+                                                                <User className='h-4 w-4 text-leetcode-dark-muted' />
                                                                 <span className={`font-semibold ${getRatingColor(leader.rating)}`}>
                                                                     {leader.username}
                                                                 </span>
                                                             </div>
                                                         </td>
-                                                        <td className='py-2 px-4'>
+                                                        <td className='py-3 px-4'>
                                                             <div className='flex items-center gap-1'>
                                                                 <TrendingUp className='h-4 w-4 text-green-400' />
                                                                 <span className={`font-bold ${getRatingColor(leader.rating)}`}>
@@ -173,119 +174,118 @@ const LeaderBoard = () => {
                                                                 </span>
                                                             </div>
                                                         </td>
-                                                        <td className='py-2 px-4'>
-                                                            <span className='text-gray-300'>{leader.country}</span>
+                                                        <td className='py-3 px-4'>
+                                                            <span className='text-leetcode-dark-text'>{leader.country}</span>
                                                         </td>
-                                                        <td className='py-2 px-4'>
+                                                        <td className='py-3 px-4'>
                                                             <span className='text-blue-400 font-semibold'>{leader.solved}</span>
                                                         </td>
-                                                        <td className='py-2 px-4'>
-                                                            <span className='text-gray-300'>{leader.contests}</span>
+                                                        <td className='py-3 px-4'>
+                                                            <span className='text-leetcode-dark-text'>{leader.contests}</span>
                                                         </td>
                                                     </tr>
                                                 ))}
                                             </tbody>
                                         </table>
                                     </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div>
+                                <div className='mb-4 flex items-center justify-between'>
+                                    <h2 className='text-xl font-semibold text-leetcode-dark-text'>Codeforces Round #912 (Div. 2)</h2>
+                                    <span className='text-sm text-leetcode-dark-muted'>Ended 2 hours ago</span>
                                 </div>
-                            ) : (
-                                <div>
-                                    <div className='mb-4 flex items-center justify-between'>
-                                        <h2 className='text-xl font-semibold text-white'>Codeforces Round #912 (Div. 2)</h2>
-                                        <span className='text-sm text-gray-400'>Ended 2 hours ago</span>
-                                    </div>
 
-                                    <div className='overflow-x-auto'>
-                                        <table className='w-full'>
-                                            <thead>
-                                                <tr className='border-b border-gray-700'>
-                                                    <th className='text-left py-1 px-4 text-gray-400 font-semibold'>Rank</th>
-                                                    <th className='text-left py-1 px-4 text-gray-400 font-semibold'>Participant</th>
-                                                    <th className='text-left py-1 px-4 text-gray-400 font-semibold'>Score</th>
-                                                    <th className='text-left py-1 px-4 text-gray-400 font-semibold'>Solved</th>
-                                                    <th className='text-left py-1 px-4 text-gray-400 font-semibold'>Penalty</th>
-                                                    <th className='text-left py-1 px-4 text-gray-400 font-semibold'>Time</th>
+                                <div className='overflow-x-auto'>
+                                    <table className='w-full'>
+                                        <thead>
+                                            <tr className='border-b border-leetcode-dark-third'>
+                                                <th className='text-left py-3 px-4 text-leetcode-dark-muted font-semibold'>Rank</th>
+                                                <th className='text-left py-3 px-4 text-leetcode-dark-muted font-semibold'>Participant</th>
+                                                <th className='text-left py-3 px-4 text-leetcode-dark-muted font-semibold'>Score</th>
+                                                <th className='text-left py-3 px-4 text-leetcode-dark-muted font-semibold'>Solved</th>
+                                                <th className='text-left py-3 px-4 text-leetcode-dark-muted font-semibold'>Penalty</th>
+                                                <th className='text-left py-3 px-4 text-leetcode-dark-muted font-semibold'>Time</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {contestLeaders.map((leader) => (
+                                                <tr
+                                                    key={leader.rank}
+                                                    className='border-b border-leetcode-dark-third hover:bg-leetcode-dark-background/50 transition-colors'
+                                                >
+                                                    <td className='py-3 px-4'>
+                                                        <div className='flex items-center gap-2'>
+                                                            {getRankIcon(leader.rank)}
+                                                            <span className='text-leetcode-dark-text font-bold'>{leader.rank}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td className='py-3 px-4'>
+                                                        <div className='flex items-center gap-2'>
+                                                            <User className='h-4 w-4 text-leetcode-dark-muted' />
+                                                            <span className='text-blue-400 font-semibold hover:text-blue-300 cursor-pointer'>
+                                                                {leader.username}
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                    <td className='py-3 px-4'>
+                                                        <span className='text-green-400 font-bold'>{leader.score}</span>
+                                                    </td>
+                                                    <td className='py-3 px-4'>
+                                                        <span className='text-leetcode-dark-text font-semibold'>{leader.solved}/4</span>
+                                                    </td>
+                                                    <td className='py-3 px-4'>
+                                                        <span className='text-red-400'>{leader.penalty}</span>
+                                                    </td>
+                                                    <td className='py-3 px-4'>
+                                                        <span className='text-leetcode-dark-text'>{leader.time}</span>
+                                                    </td>
                                                 </tr>
-                                            </thead>
-                                            <tbody>
-                                                {contestLeaders.map((leader) => (
-                                                    <tr
-                                                        key={leader.rank}
-                                                        className='border-b border-gray-700 hover:bg-gray-750 transition-colors'
-                                                    >
-                                                        <td className='py-2 px-4'>
-                                                            <div className='flex items-center gap-2'>
-                                                                {getRankIcon(leader.rank)}
-                                                                <span className='text-white font-bold'>{leader.rank}</span>
-                                                            </div>
-                                                        </td>
-                                                        <td className='py-2 px-4'>
-                                                            <div className='flex items-center gap-2'>
-                                                                <User className='h-4 w-4 text-gray-500' />
-                                                                <span className='text-blue-400 font-semibold hover:text-blue-300 cursor-pointer'>
-                                                                    {leader.username}
-                                                                </span>
-                                                            </div>
-                                                        </td>
-                                                        <td className='py-2 px-4'>
-                                                            <span className='text-green-400 font-bold'>{leader.score}</span>
-                                                        </td>
-                                                        <td className='py-2 px-4'>
-                                                            <span className='text-white font-semibold'>{leader.solved}/4</span>
-                                                        </td>
-                                                        <td className='py-2 px-4'>
-                                                            <span className='text-red-400'>{leader.penalty}</span>
-                                                        </td>
-                                                        <td className='py-2 px-4'>
-                                                            <span className='text-gray-300'>{leader.time}</span>
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                            ))}
+                                        </tbody>
+                                    </table>
                                 </div>
-                            )}
-                        </div>
-
-
-                        {/* pagination */}
-                        {activeTab === 'global' && (
-                            <div className='flex justify-between items-center mt-6 pt-4 border-t border-gray-700'>
-                                <button
-                                    onClick={handlePrevPage}
-                                    disabled={currentPage === 1 || isLoading}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === 1 || isLoading
-                                        ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                                        : 'bg-gray-700 text-white hover:bg-gray-600'
-                                        }`}
-                                >
-                                    <ChevronLeft className='h-4 w-4' />
-                                    <span>Previous</span>
-                                </button>
-
-                                <div className='flex items-center gap-2'>
-                                    <span className='text-gray-400'>Page</span>
-                                    <span className='text-white font-semibold'>{currentPage}</span>
-                                </div>
-
-                                <button
-                                    onClick={handleNextPage}
-                                    disabled={globalLeaders.length < itemsPerPage || isLoading}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${globalLeaders.length < itemsPerPage || isLoading
-                                        ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                                        : 'bg-gray-700 text-white hover:bg-gray-600'
-                                        }`}
-                                >
-                                    <span>Next</span>
-                                    <ChevronRight className='h-4 w-4' />
-                                </button>
                             </div>
                         )}
                     </div>
+
+                    {/* Pagination */}
+                    {activeTab === 'global' && (
+                        <div className='flex justify-between items-center mt-6 pt-4 border-t border-leetcode-dark-third'>
+                            <button
+                                onClick={handlePrevPage}
+                                disabled={currentPage === 1 || isLoading}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors border ${currentPage === 1 || isLoading
+                                        ? 'bg-leetcode-dark-background border-leetcode-dark-third text-leetcode-dark-muted cursor-not-allowed'
+                                        : 'bg-leetcode-dark-background border-leetcode-dark-third text-leetcode-dark-text hover:border-blue-500/50'
+                                    }`}
+                            >
+                                <ChevronLeft className='h-4 w-4' />
+                                <span>Previous</span>
+                            </button>
+
+                            <div className='flex items-center gap-2'>
+                                <span className='text-leetcode-dark-muted'>Page</span>
+                                <span className='text-leetcode-dark-text font-semibold'>{currentPage}</span>
+                            </div>
+
+                            <button
+                                onClick={handleNextPage}
+                                disabled={globalLeaders.length < itemsPerPage || isLoading}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors border ${globalLeaders.length < itemsPerPage || isLoading
+                                        ? 'bg-leetcode-dark-background border-leetcode-dark-third text-leetcode-dark-muted cursor-not-allowed'
+                                        : 'bg-leetcode-dark-background border-leetcode-dark-third text-leetcode-dark-text hover:border-blue-500/50'
+                                    }`}
+                            >
+                                <span>Next</span>
+                                <ChevronRight className='h-4 w-4' />
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 

@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { Activity } from 'lucide-react';
 
 const RecentActivity = () => {
     const [recentActivity, setRecentActivity] = useState([]);
@@ -30,34 +31,35 @@ const RecentActivity = () => {
     }, []);
 
     return (
-        <div className="bg-leetcode-dark-sidebar flex flex-col rounded-lg h-full">
-            {/* header */}
-            <div className="text-white border-b border-stone-600 p-3 px-5">
-                <h2 className="text-xl font-semibold">Recent Activity</h2>
+        <div className="bg-leetcode-dark-sidebar border border-leetcode-dark-third rounded-lg overflow-hidden">
+            <div className="px-6 py-4 border-b border-leetcode-dark-third flex items-center gap-2">
+                <Activity className="h-5 w-5 text-blue-400" />
+                <h2 className="text-lg font-semibold text-leetcode-dark-text">Recent Activity</h2>
             </div>
 
-            <div className="p-1">
-                <div className="flex flex-col">
-                    {recentActivity.length > 0 ? (
-                        recentActivity.map((activity, index) => (
-                            <div key={index} className="p-1 px-4">
-                                <h1 className="text-leetcode-dark-text font-bold text-sm">
+            <div className="p-4">
+                {recentActivity.length > 0 ? (
+                    <div className="space-y-3">
+                        {recentActivity.map((activity, index) => (
+                            <div
+                                key={index}
+                                className="pb-3 border-b border-leetcode-dark-third last:border-0 last:pb-0"
+                            >
+                                <h3 className="text-leetcode-dark-text font-medium text-sm mb-1">
                                     {activity.title}
-                                </h1>
+                                </h3>
                                 <p className="text-leetcode-dark-muted text-xs">
                                     Solved on {activity.submittedAt}
                                 </p>
-                                {index !== recentActivity.length - 1 && (
-                                    <div className="border-b border-stone-600 mt-1" />
-                                )}
                             </div>
-                        ))
-                    ) : (
-                        <p className="text-leetcode-dark-muted text-center text-sm p-4">
-                            No recent activity found.
-                        </p>
-                    )}
-                </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-8">
+                        <Activity className="h-12 w-12 mx-auto mb-3 text-leetcode-dark-muted opacity-50" />
+                        <p className="text-leetcode-dark-muted text-sm">No recent activity found</p>
+                    </div>
+                )}
             </div>
         </div>
     );
