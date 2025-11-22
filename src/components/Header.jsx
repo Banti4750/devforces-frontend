@@ -54,9 +54,9 @@ const Header = () => {
                     <Link to="/tutorial" className='text-leetcode-dark-muted hover:text-leetcode-dark-text transition-colors duration-200'>
                         Tutorial
                     </Link>
-                    <Link to="/practice" className='text-leetcode-dark-muted hover:text-leetcode-dark-text transition-colors duration-200'>
+                    {/* <Link to="/practice" className='text-leetcode-dark-muted hover:text-leetcode-dark-text transition-colors duration-200'>
                         Practice
-                    </Link>
+                    </Link> */}
                 </nav>
 
                 {/* profile */}
