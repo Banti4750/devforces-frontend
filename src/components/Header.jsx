@@ -1,6 +1,7 @@
 import { useAuth } from '../provider/AuthProvider'
 import { toast } from 'react-toastify';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import logo from '../assets/logo2.png'
 
 
 
@@ -28,8 +29,8 @@ const Header = () => {
         <div className="bg-leetcode-dark-sidebar border-b border-stone-600 h-16 w-full">
             <div className='flex justify-between items-center h-full px-6'>
                 {/* logo part */}
-                <div className="flex-shrink-0">
-                    <p className='text-leetcode-dark-text text-2xl font-bold'>Devforces</p>
+                <div >
+                    <img src={logo} alt="" />
                 </div>
 
                 {/* navigation */}

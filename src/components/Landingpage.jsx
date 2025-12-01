@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import logo from '../assets/logo2.png'
 
 import {
     Code2, Zap, Shield, ArrowRight, Github, Twitter, Menu, X, Trophy, Users,
@@ -494,11 +495,9 @@ const LandingPage = () => {
             <header className="fixed w-full top-0 z-40 glass-effect">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                     <div className="text-xl font-bold flex items-center gap-2">
-                        <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
-                            <Trophy className="w-5 h-5 text-white" />
-                        </div>
+
                         <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                            DevContest
+                            <img src={logo} alt="" />
                         </span>
                     </div>
 
@@ -1150,12 +1149,11 @@ const LandingPage = () => {
                     <div className="grid md:grid-cols-5 gap-12 mb-16">
                         <div className="md:col-span-2">
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
-                                    <Trophy className="w-6 h-6 text-white" />
-                                </div>
-                                <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                                    DevContest
+                                <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                                    <img src={logo} alt="" />
                                 </span>
+
+
                             </div>
                             <p className="text-gray-400 mb-8 leading-relaxed max-w-md">
                                 The world's premier competitive programming platform. Where elite developers compete,
@@ -1228,7 +1226,7 @@ const LandingPage = () => {
                     <div className="flex flex-col lg:flex-row justify-between items-center pt-8 border-t border-gray-800">
                         <div className="flex flex-col sm:flex-row items-center gap-6 mb-6 lg:mb-0">
                             <p className="text-gray-400 text-sm">
-                                © 2024 DevContest. All rights reserved.
+                                © 2024 Devforces. All rights reserved.
                             </p>
                             <div className="flex gap-6 text-sm">
                                 <a href="#" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
